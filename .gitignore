@@ -1,0 +1,9 @@
+*.py[cod]
+*.cache
+*.csv
+
+# pypi publishing
+*.egg-info/
+/*.sh
+/dist
+/build
