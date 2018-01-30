@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(
-    name='ravenpack-api',
+    name='ravenpackapi',
     version='1.0.0',
-    packages=['ravenpack-api'],
-    url='https://github.com/RavenPack/python-api-1.0',
+    packages=['ravenpackapi'],
+    url='https://github.com/RavenPack/python-api',
     license='MIT',
     author='RavenPack',
     author_email='dvarotto@ravenpack.com',
@@ -15,7 +15,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 4 - Alpha',
+        'Development Status :: 3 - Alpha',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',

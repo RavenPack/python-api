@@ -1,0 +1,10 @@
+-r requirements.txt
+
+twine
+
+pytest
+pytest-xdist
+
+tox
+
+coverage

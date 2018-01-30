@@ -1,17 +1,36 @@
-class Job:
-    def __init__(self, token,
-                 status='unknown', size=None, url=None, checksum=None,
-                 ):
-        self.token = token
-        self.status = status
-        self.size = size
-        self.size = int(self.size) if isinstance(size, str) else size
-        self.url = url
-        self.checksum = checksum
+import datetime
+import logging
+from time import sleep
+
+import requests
+
+from ravenpackapi.exceptions import api_method, APIException, DataFileTimeout
+
+logger = logging.getLogger(__name__)
+
+
+class Job(object):
+    _VALID_FIELDS = {'token', 'status', 'size',
+                     'url', 'checksum'}
+    _FILE_AVAILABILIY_SECONDS_DELAY = 5.0
+    _CHUNK_SIZE = 1024 * 32
+
+    def __init__(self, api, token, **kwargs):
+        self.api = api
+        self._data = kwargs
+        self._data['token'] = token
+
+    def __getattr__(self, field):
+        if field in Job._VALID_FIELDS:
+            if field == 'status':
+                return self._data.get(field, 'unknown').lower()
+            return self._data.get(field)
+        else:
+            return self.__getattribute__(field)
 
     @property
     def is_ready(self):
-        return self.status == 'complete'
+        return self.status == 'completed'
 
     @property
     def is_processing(self):
@@ -20,3 +39,56 @@ class Job:
     def __str__(self):
         return "Job {status}: {token}".format(status=self.status,
                                               token=self.token)
+
+    @api_method
+    def get_status(self):
+        token = self.token
+        response = self.api.request(
+            endpoint="/jobs/%s" % token,
+            data={
+                "token": token,
+            },
+        )
+        self._data.update(response.json())
+
+    @api_method
+    def wait_for_completion(self, timeout_seconds=None):
+        printed_once = False
+        max_end_date = datetime.datetime.utcnow() + datetime.timedelta(
+            seconds=timeout_seconds
+        ) if timeout_seconds else None
+        while True:
+            if self.is_ready:
+                break
+            try:
+                self.get_status()
+            except APIException:  # keep waiting if API raises exceptions
+                sleep(self._FILE_AVAILABILIY_SECONDS_DELAY)
+                continue
+            if max_end_date and datetime.datetime.utcnow() > max_end_date:
+                raise DataFileTimeout(
+                    "Timeout: job wasn't complete after %d seconds" % timeout_seconds
+                )
+            if not printed_once:
+                logger.info("Waiting for the job to be ready...")
+                printed_once = True
+            sleep(self._FILE_AVAILABILIY_SECONDS_DELAY)
+
+    @api_method
+    def save_to_file(self, filename):
+        api = self.api
+        job = self  # just to be clear
+        with open(filename, 'wb') as output:
+            job.wait_for_completion()
+            logger.info(u"Writing to %s" % filename)
+
+            # this is a different request than the normal API
+            # streaming the file in chunks
+            r = requests.get(job.url,
+                             headers=dict(API_KEY=api.api_key),
+                             stream=True,
+                             )
+
+            for chunk in r.iter_content(chunk_size=self._CHUNK_SIZE):
+                if chunk:
+                    output.write(chunk)
