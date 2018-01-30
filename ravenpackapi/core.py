@@ -7,6 +7,7 @@ import requests
 from ravenpackapi import Dataset
 from ravenpackapi.exceptions import APIException
 from ravenpackapi.models.dataset_list import DatasetList
+from ravenpackapi.models.reference import RpEntityReference
 from ravenpackapi.models.results import Results
 from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
@@ -106,3 +107,10 @@ class RPApi(object):
         data = response.json()
         return Results(data['records'],
                        name='Ad-hoc JSON query')
+
+    def get_entity_reference(self, rp_entity_id):
+        response = self.request(
+            endpoint="/entity-reference/%s" % rp_entity_id,
+        )
+        data = response.json()
+        return RpEntityReference(rp_entity_id, data)
