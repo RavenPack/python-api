@@ -6,7 +6,7 @@ from ravenpackapi import RPApi
 from ravenpackapi.models.job import Job
 
 
-class TestDatafile:
+class TestDatafile(object):
     api = RPApi()
 
     @pytest.mark.slow

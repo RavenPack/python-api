@@ -3,18 +3,96 @@ RavenPack API - Python client
 
 A Python library to consume the [RavenPack API](https://www.ravenpack.com).
 
-[Access the documention here.](https://www.ravenpack.com/support/)
+[API documention.](https://www.ravenpack.com/support/)
 
 ## Installation
 
     pip install ravenpackapi
     
-## Basic usage
+## About
 
 The Python client helps managing the API calls to the RavenPack dataset server
  in a Pythonic way, here are some examples of usage, you can find more in the tests.
  
-To use the API you need to have a RavenPack API KEY.
-
 This is still a work in progress: while the API is stable we are still working 
 on this Python wrapper. 
+
+## Usage
+
+First, you'll need an API object that will deal with the API calls.
+
+You will need a RavenPack API KEY, you can set the `RP_API_KEY` environment variable
+or set it in your code:
+
+```python
+from ravenpackapi import RPApi
+
+api = RPApi(api_key="YOUR_API_KEY")
+```
+
+### Getting data from the datasets
+
+There are several models to deal with data, the datasets are a cut of the RavenPack data
+they are defined with a set of filters and a set of fields.
+
+```python
+# Get the dataset description from the server, here we use 'us30'
+# one of RavenPack public datasets with the top30 companies in the US  
+
+ds = api.get_dataset(dataset_id='us30')
+```
+#### Downloads: json
+
+```python
+data = ds.json(
+    start_date='2018-01-05 18:00:00',
+    end_date='2018-01-05 18:01:00',
+)
+
+for record in data:
+    print(record)
+```
+
+The json endpoint is handy for asking data synchronously, if you need to download big
+data chunks you may want to use the asynchronous datafile endpoint instead.
+
+Json queries are limited to
+* granular datasets: 10,000 records
+* indicator datasets: 500 entities, timerange 1Y, lookback 1Y
+
+#### Downloads: datafile
+
+For bigger requests the datafile endpoint can be used.
+
+Requesting a datafile, will give you back a job promise, that will take some time
+to complete.
+
+```python
+job = ds.request_datafile(
+    start_date='2018-01-05 18:00:00',
+    end_date='2018-01-05 18:01:00',
+)
+
+with open('output.csv') as fp:
+	job.save_to_file(filename=fp.name)
+```
+
+### Entity reference
+
+The entity reference endpoint give you all the available information over an Entity
+starting from the RP_ENTITY_ID
+
+```python
+ALPHABET_RP_ENTITY_ID = '4A6F00'
+
+references = api.get_entity_reference(ALPHABET_RP_ENTITY_ID)
+
+# show all the names over history
+for name in references.names:
+    print(name.value, name.start, name.end)
+    
+# print all the ticket valid today
+for ticker in references.tickers:
+    if ticker.is_valid():
+        print(ticker)
+```

@@ -6,9 +6,11 @@ logging.basicConfig(level=logging.DEBUG)
 api = RPApi()
 
 # query the json endpoint for a dataset ***
-# use the public dataset with id 'us500'
-ds = api.get_dataset(dataset_id='us500')
+# use the public dataset with id 'us30'
+ds = api.get_dataset(dataset_id='us30')
 # query the dataset analytics with the json endpoint
+print(ds)
+
 data = ds.json(
     start_date='2018-01-05 18:00:00',
     end_date='2018-01-05 18:01:00',

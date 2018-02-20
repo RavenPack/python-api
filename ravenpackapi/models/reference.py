@@ -1,8 +1,33 @@
-import collections
+import datetime
 
-RPEntityMetadata = collections.namedtuple(
-    'RPEntityMetadata', ['value', 'start', 'end']
-)
+from ravenpackapi.utils.date_formats import as_date
+
+
+class RPEntityMetadata(object):
+    def __init__(self, value, start=None, end=None):
+        super(RPEntityMetadata, self).__init__()
+        self.value = value
+        self.start = as_date(start)
+        self.end = as_date(end)
+
+    def is_valid(self, when=None):
+        """ Check that the metadata is valid at the given time (default to now)"""
+        if when is None:
+            when = datetime.date.today()  # default to today
+        when = as_date(when)
+
+        if self.start and when < self.start:
+            return False
+        if self.end and when >= self.end:
+            return False
+        return True
+
+    def __str__(self):
+        return "Value: {value} - valid from {start} to {end}".format(
+            **self.__dict__
+        )
+
+
 _MAPPED_FIELDS = {
     # the fields here are singular, we use the plural attributes
     # for returning a list of RPEntityMetadata
@@ -48,13 +73,10 @@ class RpEntityReference(object):
         else:
             return self.__getattribute__(field)
 
-    @property
-    def tickers(self):
-        return [
-            RPEntityMetadata(d['data_value'],
-                             d['range_start'],
-                             d['range_end'])
-            for d in self._data['ticker']
+    def __dir__(self):
+        """ Help autocompleting this additional fields """
+        return list(super(RpEntityReference, self).__dir__()) + [
+            k for k in _MAPPED_FIELDS
         ]
 
     def __repr__(self):
