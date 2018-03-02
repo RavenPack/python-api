@@ -131,17 +131,21 @@ class Dataset(object):
     def request_datafile(self, start_date, end_date,
                          output_format='csv',
                          compressed=False,
+                         tags=None,
                          notify=False):
         api = self.api
+        data = {
+            "start_date": start_date,
+            "end_date": end_date,
+            "format": output_format,
+            "compressed": compressed,
+            "notify": notify,
+        }
+        if tags:
+            data['tags'] = tags
         response = api.request(
             endpoint="/datafile/%s" % self.id,
-            data={
-                "start_date": start_date,
-                "end_date": end_date,
-                "format": output_format,
-                "compressed": compressed,
-                "notify": notify,
-            },
+            data=data,
             method='post',
         )
         job = Job(api=self.api,

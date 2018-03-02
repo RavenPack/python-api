@@ -14,8 +14,10 @@ A Python library to consume the [RavenPack API](https://www.ravenpack.com).
 The Python client helps managing the API calls to the RavenPack dataset server
  in a Pythonic way, here are some examples of usage, you can find more in the tests.
  
-This is still a work in progress: while the API is stable we are still working 
-on this Python wrapper. 
+#### Note
+
+This is still a work in progress.
+The API is stable and we are continuing to update this Python wrapper.
 
 ## Usage
 
