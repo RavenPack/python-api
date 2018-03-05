@@ -79,6 +79,21 @@ with open('output.csv') as fp:
 	job.save_to_file(filename=fp.name)
 ```
 
+### Realtime news-feed
+
+When you have a dataset you can subscribe to its realtime news-feed
+
+```python
+ds = api.get_dataset(dataset_id='us500')
+for record in ds.request_realtime():
+	print(record)
+	print(record.timestamp_utc, record.entity_name,
+              record['event_relevance'])
+```
+
+The returned record takes care of converting the various fields to the appropriate type,
+so `record.timestamp_utc` will be a `datetime`
+
 ### Entity reference
 
 The entity reference endpoint give you all the available information over an Entity

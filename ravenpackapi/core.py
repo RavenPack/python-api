@@ -20,6 +20,8 @@ logger = logging.getLogger("ravenpack.core")
 class RPApi(object):
     _BASE_URL = os.environ.get('RP_API_ENDPOINT',
                                'https://api.ravenpack.com/1.0')
+    _FEED_BASE_URL = os.environ.get('RP_FEED_ENDPOINT',
+                                    'https://feed.ravenpack.com/data')
 
     def __init__(self, api_key=None):
         api_key = api_key or os.environ.get('RP_API_KEY')

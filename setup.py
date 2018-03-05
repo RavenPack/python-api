@@ -5,7 +5,7 @@ with open('README.rst') as readme_file:
 
 setup(
     name='ravenpackapi',
-    version='1.0.6',
+    version='1.0.7',
     packages=find_packages(include=['ravenpackapi']),
     include_package_data=True,
 
@@ -32,5 +32,5 @@ setup(
     ],
 
     keywords='python analytics api rest news data',
-    install_requires=['requests[security]'],
+    install_requires=['requests[security]', 'future'],
 )

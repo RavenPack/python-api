@@ -1,9 +1,11 @@
 import logging
 
+import requests
+
 from ravenpackapi.exceptions import api_method
-from ravenpackapi.models.job import Job
-from ravenpackapi.models.results import Results
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
+from .job import Job
+from .results import Results, Result
 
 logger = logging.getLogger('ravenpack.models.dataset')
 
@@ -151,3 +153,17 @@ class Dataset(object):
         job = Job(api=self.api,
                   token=response.json()['token'])  # an undefined job, has just the token
         return job
+
+    @api_method
+    def request_realtime(self):
+        api = self.api
+        endpoint = "{base}/{dataset_id}".format(base=api._FEED_BASE_URL,
+                                                dataset_id=self.id)
+        logger.debug("Connecting with RT feed: %s" % endpoint)
+        r = requests.get(endpoint,
+                         headers=dict(API_KEY=api.api_key),
+                         stream=True,
+                         )
+
+        for line in r.iter_lines():
+            yield Result(line)
