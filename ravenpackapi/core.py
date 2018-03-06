@@ -13,17 +13,20 @@ from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
+VERSION = '1.0.9'
 
 logger = logging.getLogger("ravenpack.core")
 
 
 class RPApi(object):
-    _BASE_URL = os.environ.get('RP_API_ENDPOINT',
-                               'https://api.ravenpack.com/1.0')
-    _FEED_BASE_URL = os.environ.get('RP_FEED_ENDPOINT',
-                                    'https://feed.ravenpack.com/data')
-
     def __init__(self, api_key=None):
+        self._BASE_URL = os.environ.get(
+            'RP_API_ENDPOINT',
+            'https://api.ravenpack.com/1.0')
+        self._FEED_BASE_URL = os.environ.get(
+            'RP_FEED_ENDPOINT',
+            'https://feed.ravenpack.com/1.0/json'
+        )
         api_key = api_key or os.environ.get('RP_API_KEY')
         if api_key is None:
             raise ValueError(
@@ -31,6 +34,12 @@ class RPApi(object):
                 "or set your environment RP_API_KEY with your API KEY."
             )
         self.api_key = api_key
+
+    @property
+    def headers(self):
+        return {"API_KEY": self.api_key,
+                'User-Agent': 'RavenPack Python v%s' % VERSION,
+                }
 
     def request(self, endpoint, data=None, params=None, method='get'):
         assert method in _VALID_METHODS, 'Method {used} not accepted. Please use {valid_methods}'
@@ -40,7 +49,7 @@ class RPApi(object):
                                                              endpoint=endpoint))
         response = requests_call(
             url=self._BASE_URL + endpoint,
-            headers=dict(API_KEY=self.api_key),
+            headers=self.headers,
             data=json.dumps(data) if data else None,
             params=params,
         )

@@ -36,6 +36,10 @@ class Job(object):
     def is_processing(self):
         return self.status in {'enqueued', 'processing'}
 
+    @property
+    def is_undefined(self):
+        return self.status in {'unknown'}
+
     def __str__(self):
         return "Job {status}: {token}".format(status=self.status,
                                               token=self.token)
@@ -57,9 +61,14 @@ class Job(object):
         max_end_date = datetime.datetime.utcnow() + datetime.timedelta(
             seconds=timeout_seconds
         ) if timeout_seconds else None
+
+        if self.is_undefined:
+            self.get_status()
+
         while True:
             if self.is_ready:
                 break
+            sleep(self._FILE_AVAILABILIY_SECONDS_DELAY)
             try:
                 self.get_status()
             except APIException:  # keep waiting if API raises exceptions
@@ -72,7 +81,6 @@ class Job(object):
             if not printed_once:
                 logger.info("Waiting for the job to be ready...")
                 printed_once = True
-            sleep(self._FILE_AVAILABILIY_SECONDS_DELAY)
 
     @api_method
     def save_to_file(self, filename):
@@ -85,10 +93,27 @@ class Job(object):
             # this is a different request than the normal API
             # streaming the file in chunks
             r = requests.get(job.url,
-                             headers=dict(API_KEY=api.api_key),
+                             headers=api.headers,
                              stream=True,
                              )
 
             for chunk in r.iter_content(chunk_size=self._CHUNK_SIZE):
                 if chunk:
                     output.write(chunk)
+
+    @api_method
+    def iterate_results(self):
+        api = self.api
+        job = self  # just to be clear
+        job.wait_for_completion()
+
+        with requests.Session() as s:
+            r = s.get(job.url,
+                      headers=api.headers,
+                      stream=True,
+                      )
+            iterator = r.iter_lines(chunk_size=self._CHUNK_SIZE)
+            header = next(iterator)  # discard the header
+
+            for line in iterator:
+                yield line.decode('utf-8')

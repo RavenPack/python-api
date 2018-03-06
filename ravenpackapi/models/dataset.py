@@ -93,6 +93,18 @@ class Dataset(object):
         )
 
     @api_method
+    def save(self):
+        response = self.api.request(
+            endpoint="/datasets",
+            data=self.as_dict(),
+            method='post'
+        )
+
+        dataset_id = response.json()['dataset_uuid']
+        logger.info("Created dataset %s" % dataset_id)
+        self._data['uuid'] = dataset_id
+
+    @api_method
     def json(self,
              start_date,
              end_date,
@@ -161,7 +173,7 @@ class Dataset(object):
                                                 dataset_id=self.id)
         logger.debug("Connecting with RT feed: %s" % endpoint)
         r = requests.get(endpoint,
-                         headers=dict(API_KEY=api.api_key),
+                         headers=api.headers,
                          stream=True,
                          )
 

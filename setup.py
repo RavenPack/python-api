@@ -1,11 +1,13 @@
 from setuptools import setup, find_packages
 
+from ravenpackapi.core import VERSION
+
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
 setup(
     name='ravenpackapi',
-    version='1.0.8',
+    version=VERSION,
     packages=find_packages(include=['ravenpackapi']),
     include_package_data=True,
 
