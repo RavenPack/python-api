@@ -1,3 +1,4 @@
+import csv
 import datetime
 import logging
 from time import sleep
@@ -79,7 +80,7 @@ class Job(object):
                     "Timeout: job wasn't complete after %d seconds" % timeout_seconds
                 )
             if not printed_once:
-                logger.info("Waiting for the job to be ready...")
+                logger.info("Waiting for the job %s to be ready..." % self.token)
                 printed_once = True
 
     @api_method
@@ -116,4 +117,5 @@ class Job(object):
             header = next(iterator)  # discard the header
 
             for line in iterator:
-                yield line.decode('utf-8')
+                fields = list(csv.reader([line.decode('utf-8')]))[0]
+                yield fields
