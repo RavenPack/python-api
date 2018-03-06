@@ -5,7 +5,7 @@ with open('README.rst') as readme_file:
 
 setup(
     name='ravenpackapi',
-    version='1.0.7',
+    version='1.0.8',
     packages=find_packages(include=['ravenpackapi']),
     include_package_data=True,
 
@@ -21,7 +21,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
