@@ -26,3 +26,7 @@ def api_method(func):
         return func(instance, *args, **kwargs)
 
     return decorated_func
+
+
+class ValidationError(Exception):
+    pass

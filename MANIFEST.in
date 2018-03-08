@@ -8,5 +8,6 @@ recursive-include tests *
 recursive-exclude * __pycache__
 recursive-exclude * .cache
 recursive-exclude * *.py[co]
+recursive-exclude * *.csv
 
 recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif

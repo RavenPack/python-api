@@ -114,7 +114,7 @@ class Job(object):
                       stream=True,
                       )
             iterator = r.iter_lines(chunk_size=self._CHUNK_SIZE)
-            header = next(iterator)  # discard the header
+            headers = next(iterator)  # discard the headers
 
             for line in iterator:
                 fields = list(csv.reader([line.decode('utf-8')]))[0]

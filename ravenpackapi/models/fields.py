@@ -33,6 +33,10 @@ def less_or_equal_than(max):
     return lambda value: value is None or value <= max
 
 
+def between_inclusive(min, max):
+    return lambda value: value is None or min <= value <= max
+
+
 def str_optional(value):
     if value is not None:
         return str(value)
@@ -53,18 +57,18 @@ def int_optional(value):
 
 ANALYTICS_FIELDS = [
     Field('timestamp_utc', from_timestamp),
-    Field('rp_story_id', str),
+    Field('rp_story_id', str, validators=[length_is(32)]),
 
     Field('rp_entity_id', str, validators=[length_is(6)]),
     Field('entity_type', str, validators=[length_is(4)]),
     Field('entity_name', str),
 
     Field('country_code', str, validators=[length_is(2)]),
-    Field('relevance', int, validators=[less_or_equal_than(100)]),
-    Field('event_sentiment_score', decimal_optional),
-    Field('event_relevance', decimal_optional),
+    Field('relevance', int, validators=[between_inclusive(0, 100)]),
+    Field('event_sentiment_score', decimal_optional, validators=[between_inclusive(-1, 1)]),
+    Field('event_relevance', decimal_optional, validators=[between_inclusive(0, 100)]),
 
-    Field('event_similarity_key', str_optional),
+    Field('event_similarity_key', str_optional, validators=[length_is(32)]),
     Field('event_similarity_days', int_optional),
 
     Field('topic', str_optional),
@@ -89,9 +93,9 @@ ANALYTICS_FIELDS = [
 
     Field('category', str_optional),
     Field('event_text', str_optional),
-    Field('news_type', str_optional),
-    Field('rp_source_id', str_optional),
-    Field('source_name', str_optional),
+    Field('news_type', str),
+    Field('rp_source_id', str),
+    Field('source_name', str),
 
     Field('css', float),
     Field('nip', float),

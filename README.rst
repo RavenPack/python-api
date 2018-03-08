@@ -1,8 +1,8 @@
 RavenPack API - Python client
 =============================
 
-A Python library to consume the `RavenPack
-API <https://www.ravenpack.com>`__.
+A Python library to consume the
+`RavenPack <https://www.ravenpack.com>`__ API.
 
 `API documention. <https://www.ravenpack.com/support/>`__
 
@@ -20,18 +20,17 @@ The Python client helps managing the API calls to the RavenPack dataset
 server in a Pythonic way, here are some examples of usage, you can find
 more in the tests.
 
-Note
-^^^^
-
-This is still a work in progress. The API is stable and we are
-continuing to update this Python wrapper.
-
 Usage
 -----
 
-First, you'll need an API object that will deal with the API calls.
+In order to be able to use the RavenPack API you will need an API KEY.
+If you don't already have one please contact your `customer
+support <mailto:sales@ravenpack.com>`__ representative.
 
-You will need a RavenPack API KEY, you can set the ``RP_API_KEY``
+To begin using the API you will need to instantiate an API object that
+will deal with the API calls.
+
+Using your RavenPack API KEY, you can either set the ``RP_API_KEY``
 environment variable or set it in your code:
 
 .. code:: python
@@ -43,9 +42,10 @@ environment variable or set it in your code:
 Getting data from the datasets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are several models to deal with data, the datasets are a cut of
-the RavenPack data they are defined with a set of filters and a set of
-fields.
+In the API wrapper, there are several models that maybe used for
+interacting with data.
+
+Here is how you may get a dataset definition for a pre-existing dataset
 
 .. code:: python
 
@@ -57,6 +57,10 @@ fields.
 Downloads: json
 ^^^^^^^^^^^^^^^
 
+The json endpoint is useful for asking data synchronously, optimized for
+small requests, if you need to download big data chunks you may want to
+use the asynchronous datafile endpoint instead.
+
 .. code:: python
 
     data = ds.json(
@@ -67,19 +71,17 @@ Downloads: json
     for record in data:
         print(record)
 
-The json endpoint is handy for asking data synchronously, if you need to
-download big data chunks you may want to use the asynchronous datafile
-endpoint instead.
-
 Json queries are limited to \* granular datasets: 10,000 records \*
-indicator datasets: 500 entities, timerange 1Y, lookback 1Y
+indicator datasets: 500 entities, timerange 1 year, lookback window 1
+year
 
 Downloads: datafile
 ^^^^^^^^^^^^^^^^^^^
 
-For bigger requests the datafile endpoint can be used.
+For bigger requests the datafile endpoint can be used to prepare a
+datafile asynchronously on the RavenPack server for later retrieval.
 
-Requesting a datafile, will give you back a job promise, that will take
+Requesting a datafile, will give you back a job object, that will take
 some time to complete.
 
 .. code:: python
@@ -92,10 +94,10 @@ some time to complete.
     with open('output.csv') as fp:
         job.save_to_file(filename=fp.name)
 
-Realtime news-feed
-~~~~~~~~~~~~~~~~~~
+Streaming real-time data
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-When you have a dataset you can subscribe to its realtime news-feed
+It is possible to subscribe to a real-time stream for a dataset:
 
 .. code:: python
 
@@ -105,14 +107,14 @@ When you have a dataset you can subscribe to its realtime news-feed
         print(record.timestamp_utc, record.entity_name,
                   record['event_relevance'])
 
-The returned record takes care of converting the various fields to the
+The Result object takes care of converting the various fields to the
 appropriate type, so ``record.timestamp_utc`` will be a ``datetime``
 
 Entity reference
 ~~~~~~~~~~~~~~~~
 
-The entity reference endpoint give you all the available information
-over an Entity starting from the RP\_ENTITY\_ID
+The entity reference endpoint give you all the available information for
+an Entity given the RP\_ENTITY\_ID
 
 .. code:: python
 

@@ -2,8 +2,9 @@ import logging
 
 import requests
 
-from ravenpackapi.exceptions import api_method
+from ravenpackapi.exceptions import api_method, APIException
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
+from ravenpackapi.utils.date_formats import as_datetime_str
 from .job import Job
 from .results import Results, Result
 
@@ -146,22 +147,34 @@ class Dataset(object):
                          output_format='csv',
                          compressed=False,
                          tags=None,
-                         notify=False):
+                         notify=False,
+                         allow_empty=True):
+        """ Request a datafile with data in the requested date
+            This is asyncronous: it returns a job that you can wait for
+            if allow_empty is True, it may return None meaning that the job will have no data
+        """
         api = self.api
         data = {
-            "start_date": start_date,
-            "end_date": end_date,
+            "start_date": as_datetime_str(start_date),
+            "end_date": as_datetime_str(end_date),
             "format": output_format,
             "compressed": compressed,
             "notify": notify,
         }
         if tags:
             data['tags'] = tags
-        response = api.request(
-            endpoint="/datafile/%s" % self.id,
-            data=data,
-            method='post',
-        )
+        try:
+            response = api.request(
+                endpoint="/datafile/%s" % self.id,
+                data=data,
+                method='post',
+            )
+        except APIException as e:
+            if e.response.status_code == 400 and allow_empty:
+                errors = [e['type'] for e in e.response.json()['errors']]
+                if 'DatafileEmptyError' in errors:
+                    return None
+            raise e
         job = Job(api=self.api,
                   token=response.json()['token'])  # an undefined job, has just the token
         return job
