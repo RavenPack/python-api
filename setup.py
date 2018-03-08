@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-from ravenpackapi.core import VERSION
+VERSION = '1.0.13'
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
