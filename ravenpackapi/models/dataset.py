@@ -22,6 +22,8 @@ class Dataset(object):
         :type api: RPApi
         """
         super(Dataset, self).__init__()
+        if 'id' in kwargs:
+            kwargs['uuid'] = kwargs.pop('id')
         self._data = kwargs
         self.api = api
         # the dataset can be initialized with just the uuid
@@ -44,7 +46,7 @@ class Dataset(object):
         if field in Dataset._VALID_FIELDS:
             self._data[field] = value
         else:
-            return super(Dataset, self).__setattr__(field, value)
+            object.__setattr__(self, field, value)
 
     @property
     def id(self):  # an alias for the dataset unique id
@@ -52,8 +54,12 @@ class Dataset(object):
 
     def __getattr__(self, field):
         if field in Dataset._VALID_FIELDS:
-            if field not in self._data:
+            if field not in self._data and 'uuid' in self._data:
+                # get the missing fields
                 self.get_from_server()
+            if field == 'uuid' and field not in self._data:
+                # we can't get the uuid of a new dataset
+                return None
             return self._data[field]
         else:
             return self.__getattribute__(field)
@@ -148,7 +154,9 @@ class Dataset(object):
                          compressed=False,
                          tags=None,
                          notify=False,
-                         allow_empty=True):
+                         allow_empty=True,
+                         time_zone='UTC'
+                         ):
         """ Request a datafile with data in the requested date
             This is asyncronous: it returns a job that you can wait for
             if allow_empty is True, it may return None meaning that the job will have no data
@@ -160,6 +168,7 @@ class Dataset(object):
             "format": output_format,
             "compressed": compressed,
             "notify": notify,
+            "time_zone": time_zone,
         }
         if tags:
             data['tags'] = tags
