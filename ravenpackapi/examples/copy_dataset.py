@@ -10,6 +10,8 @@ us30 = Dataset(api=api, id='us30')
 
 print(us30.filters)
 
+# creating a new dataset with modified filters and fields
+# the filters are an aggregation of the us30 with some additional rule
 new_filters = {"$and": [
     us30.filters,
     {"relevance": {
@@ -65,14 +67,17 @@ new_fields = [
         }
     }
 ]
+
 custom_dataset = Dataset(api=api,
                          name="Us30 indicators",
-                         filters=us30.filters,
+                         filters=new_filters,
                          fields=new_fields,
                          frequency='daily'
                          )
 custom_dataset.save()
 print(custom_dataset)
+
+# query the datafile and save it to file
 job = custom_dataset.request_datafile(
     start_date='2017-01-01 19:30',
     end_date='2017-01-02 19:30',
