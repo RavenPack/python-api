@@ -7,6 +7,7 @@ import requests
 from ravenpackapi import Dataset
 from ravenpackapi.exceptions import APIException
 from ravenpackapi.models.dataset_list import DatasetList
+from ravenpackapi.models.mapping import RPMappingResults
 from ravenpackapi.models.reference import RpEntityReference
 from ravenpackapi.models.results import Results
 from ravenpackapi.util import to_curl
@@ -42,7 +43,10 @@ class RPApi(object):
                 }
 
     def request(self, endpoint, data=None, params=None, method='get'):
-        assert method in _VALID_METHODS, 'Method {used} not accepted. Please use {valid_methods}'
+        assert method in _VALID_METHODS, \
+            'Method {used} not accepted. Please choose one of {valid_methods}'.format(
+                used=method, valid_methods=", ".join(_VALID_METHODS)
+            )
         logger.debug("Request to %s" % endpoint)
         requests_call = getattr(requests, method)
         logger.debug("Request {method} to {endpoint}".format(method=method,
@@ -125,3 +129,14 @@ class RPApi(object):
         )
         data = response.json()
         return RpEntityReference(rp_entity_id, data)
+
+    def get_entity_mapping(self, identifiers):
+        response = self.request(
+            endpoint="/entity-mapping",
+            method='post',
+            data={
+                "identifiers": identifiers
+            },
+        )
+        data = response.json()
+        return RPMappingResults(data)
