@@ -12,7 +12,7 @@ class TestRealtimeFeed():
     api = RPApi()
 
     @pytest.mark.slow
-    def test_get_something_from_us500(self, dataset='us500',
+    def test_get_something_from_us500(self, dataset='all-granular-data',
                                       max_received=5):
         ds = self.api.get_dataset(dataset_id=dataset)
 

@@ -198,6 +198,7 @@ class Dataset(object):
                          headers=api.headers,
                          stream=True,
                          )
+        r.encoding = 'utf-8'
 
-        for line in r.iter_lines():
+        for line in r.iter_lines(decode_unicode=True):
             yield Result(line)

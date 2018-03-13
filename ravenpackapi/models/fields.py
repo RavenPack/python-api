@@ -1,3 +1,6 @@
+from __future__ import unicode_literals
+
+from builtins import str
 from decimal import Decimal
 
 from ravenpackapi.utils.date_formats import from_timestamp
