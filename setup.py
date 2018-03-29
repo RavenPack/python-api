@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.0.14'
+VERSION = '1.0.16'
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -8,7 +8,7 @@ with open('README.rst') as readme_file:
 setup(
     name='ravenpackapi',
     version=VERSION,
-    packages=find_packages(include=['ravenpackapi']),
+    packages=find_packages(include=['ravenpackapi.*']),
     include_package_data=True,
 
     url='https://github.com/RavenPack/python-api',

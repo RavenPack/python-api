@@ -110,6 +110,41 @@ It is possible to subscribe to a real-time stream for a dataset:
 The Result object takes care of converting the various fields to the
 appropriate type, so ``record.timestamp_utc`` will be a ``datetime``
 
+Entity mapping
+~~~~~~~~~~~~~~
+
+The entity mapping endpoint allow you to find the RP\_ENTITY\_ID mapped
+to your universe of entities.
+
+.. code:: python
+
+    universe = [
+        "RavenPack",
+        {'ticker': 'AAPL'},
+        'California USA',
+        {  # Amazon, specifying various fields
+            "client_id": "12345-A",
+            "date": "2017-01-01",
+            "name": "Amazon Inc.",
+            "entity_type": "COMP",
+            "isin": "US0231351067",
+            "cusip": "023135106",
+            "sedol": "B58WM62",
+            "listing": "XNAS:AMZN"
+        },
+        
+    ]
+    mapping = api.get_entity_mapping(universe)
+
+    # in this case we match everything
+    assert len(mapping.matched) == len(universe)
+    assert [m.name for m in mapping.matched] == [
+        "RavenPack International S.L.",
+        "Apple Inc.",
+        "California, U.S.",
+        "Amazon.com Inc."
+    ]
+
 Entity reference
 ~~~~~~~~~~~~~~~~
 
