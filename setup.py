@@ -8,7 +8,8 @@ with open('README.rst') as readme_file:
 setup(
     name='ravenpackapi',
     version=VERSION,
-    packages=find_packages(include=['ravenpackapi', 'ravenpackapi.*']),
+    packages=find_packages(include=['ravenpackapi']),
+    package_data={'ravenpackapi': ['ravenpackapi/*']},
     include_package_data=True,
 
     url='https://github.com/RavenPack/python-api',
