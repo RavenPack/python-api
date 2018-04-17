@@ -101,14 +101,30 @@ class Dataset(object):
 
     @api_method
     def save(self):
-        response = self.api.request(
-            endpoint="/datasets",
-            data=self.as_dict(),
-            method='post'
-        )
+        if self.id is None:
+            # creating a new dataset
+            verb = 'Created'
+            method = 'post'
+            endpoint = "/datasets"
+        else:
+            verb = 'Updated'
+            endpoint = "/datasets/%s" % self.id
+            method = 'put'
 
+        # get rid of the readonly fields
+        data = {k: v for k, v in self.as_dict().items()
+                if k not in Dataset._READ_ONLY_FIELDS}
+
+        response = self.api.request(
+            endpoint=endpoint,
+            data=data,
+            method=method
+        )
         dataset_id = response.json()['dataset_uuid']
-        logger.info("Created dataset %s" % dataset_id)
+        logger.info("{verb} dataset {id}".format(
+            verb=verb,
+            id=dataset_id)
+        )
         self._data['uuid'] = dataset_id
 
     @api_method
