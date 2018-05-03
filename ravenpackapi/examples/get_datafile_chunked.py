@@ -8,12 +8,12 @@ Download files are compressed, and chunked per year
 import os
 
 from ravenpackapi import RPApi
-from ravenpackapi.util import time_intervals, SPLIT_YEARLY
+from ravenpackapi.util import time_intervals, SPLIT_WEEKLY
 
 api = RPApi(api_key='YOUR_API_KEY')
 ds = api.get_dataset('YOUR_DATASET_ID')
 
-start_date = '2000-01-01'
+start_date = '2018-01-01'
 end_date = '2018-01-10'
 GET_COMPRESSED = True
 
@@ -21,9 +21,10 @@ output_folder = './output'
 
 os.makedirs(output_folder, exist_ok=True)  # create folder for output
 for range_start, range_end in time_intervals(start_date, end_date,
-                                             split=SPLIT_YEARLY,
-                                             # another option is split=SPLIT_MONTHLY
-                                             # (that is the default)
+                                             split=SPLIT_WEEKLY,
+                                             # available splits:
+                                             # SPLIT_YEARLY, SPLIT_WEEKLY, SPLIT_DAILY
+                                             # or SPLIT_MONTHLY (the default)
                                              ):
     job = ds.request_datafile(
         start_date=range_start,
@@ -35,7 +36,7 @@ for range_start, range_end in time_intervals(start_date, end_date,
         continue
     filename = os.path.join(output_folder,
                             "datafile-{datestr}.{ext}".format(
-                                datestr=range_start.strftime('%Y'),
+                                datestr=range_start.strftime('%Y-%m-%d'),
                                 ext='zip' if GET_COMPRESSED else 'csv')
                             )
     print("Saving", range_start, "-", range_end, "=>", filename)

@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.0.18'
+VERSION = '1.0.19'
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -35,5 +35,5 @@ setup(
     ],
 
     keywords='python analytics api rest news data',
-    install_requires=['requests[security]', 'future'],
+    install_requires=['requests[security]', 'future', 'python-dateutil'],
 )

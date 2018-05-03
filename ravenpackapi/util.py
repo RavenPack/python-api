@@ -1,9 +1,12 @@
-import datetime
+from dateutil.relativedelta import relativedelta
+from dateutil.rrule import MO
 
 from ravenpackapi.utils.date_formats import as_datetime
 
 SPLIT_YEARLY = 'yearly'
 SPLIT_MONTHLY = 'monthly'
+SPLIT_WEEKLY = 'weekly'
+SPLIT_DAILY = 'daily'
 
 
 def parts_to_curl(method, endpoint, headers, data=None):
@@ -35,21 +38,43 @@ def to_curl(request):
 
 
 def time_intervals(date_start, date_end, split=SPLIT_MONTHLY):
-    assert split in (SPLIT_MONTHLY, SPLIT_YEARLY)
+    assert split in (
+        SPLIT_YEARLY,
+        SPLIT_MONTHLY,
+        SPLIT_WEEKLY,
+        SPLIT_DAILY)
     start = as_datetime(date_start)
     date_end = as_datetime(date_end)
 
     def get_end(get_next_end):
-        result = get_next_end
         if split == SPLIT_MONTHLY:
             # up to beginning of next month
-            result = result.replace(day=1) + datetime.timedelta(days=32)
-            return result.replace(day=1,
-                                  hour=0, minute=0, second=0, microsecond=0)
+            return get_next_end + \
+                   relativedelta(
+                       months=+1,
+                       day=1, hour=0, minute=0, second=0, microsecond=0
+                   )
         elif split == SPLIT_YEARLY:
             # up to beginning of next year
-            return result.replace(result.year + 1, month=1, day=1,
-                                  hour=0, minute=0, second=0, microsecond=0)
+            return get_next_end + \
+                   relativedelta(
+                       years=+1,
+                       month=1, day=1, hour=0, minute=0, second=0, microsecond=0
+                   )
+        elif split == SPLIT_WEEKLY:
+            # will break the time on weeks starting on Mondays
+            return get_next_end + \
+                   relativedelta(
+                       days=+1, weekday=MO,
+                       hour=0, minute=0, second=0, microsecond=0
+                   )
+        elif split == SPLIT_DAILY:
+            # will break the time on weeks starting on Mondays
+            return get_next_end + \
+                   relativedelta(
+                       days=+1,
+                       hour=0, minute=0, second=0, microsecond=0
+                   )
 
     while True:
         # some datetime trick to get the beginning of next month
