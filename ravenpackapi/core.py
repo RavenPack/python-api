@@ -14,7 +14,7 @@ from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.19'
+VERSION = '1.0.20'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -35,6 +35,7 @@ class RPApi(object):
                 "or set your environment RP_API_KEY with your API KEY."
             )
         self.api_key = api_key
+        self.log_curl_commands = True
 
     @property
     def headers(self):
@@ -57,6 +58,8 @@ class RPApi(object):
             data=json.dumps(data) if data else None,
             params=params,
         )
+        if self.log_curl_commands:
+            logger.info("API query to %s" % to_curl(response.request))
         if response.status_code != 200:
             logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
             raise APIException(

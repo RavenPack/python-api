@@ -6,6 +6,7 @@ from time import sleep
 import requests
 
 from ravenpackapi.exceptions import api_method, APIException, DataFileTimeout
+from ravenpackapi.util import to_curl
 
 logger = logging.getLogger(__name__)
 
@@ -93,12 +94,17 @@ class Job(object):
 
             # this is a different request than the normal API
             # streaming the file in chunks
-            r = requests.get(job.url,
-                             headers=api.headers,
-                             stream=True,
-                             )
-
-            for chunk in r.iter_content(chunk_size=self._CHUNK_SIZE):
+            response = requests.get(job.url,
+                                    headers=api.headers,
+                                    stream=True,
+                                    )
+            if response.status_code != 200:
+                logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
+                raise APIException(
+                    'Got an error {status}: body was \'{error_message}\''.format(
+                        status=response.status_code, error_message=response.text
+                    ), response=response)
+            for chunk in response.iter_content(chunk_size=self._CHUNK_SIZE):
                 if chunk:
                     output.write(chunk)
 
