@@ -14,7 +14,7 @@ from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.20'
+VERSION = '1.0.21'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -64,7 +64,8 @@ class RPApi(object):
             logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
             raise APIException(
                 'Got an error {status}: body was \'{error_message}\''.format(
-                    status=response.status_code, error_message=response.text
+                    status=response.status_code,
+                    error_message=response.text
                 ), response=response)
         return response
 

@@ -57,9 +57,13 @@ class Dataset(object):
             if field not in self._data and 'uuid' in self._data:
                 # get the missing fields
                 self.get_from_server()
-            if field == 'uuid' and field not in self._data:
-                # we can't get the uuid of a new dataset
-                return None
+            if field not in self._data:
+                if field == 'uuid':  # we can't get the uuid of a new dataset
+                    return None
+                elif field == 'fields':
+                    return None
+                elif field == 'frequency':
+                    return None
             return self._data[field]
         else:
             return self.__getattribute__(field)
@@ -133,7 +137,7 @@ class Dataset(object):
              end_date,
              fields=None,
              time_zone=None,
-             frequency='granular',
+             frequency=None,
              having=None,
              ):
         """ Use the dataset filters to request a data
@@ -148,6 +152,7 @@ class Dataset(object):
             # fields are required, if it's not provided we use
             # the dataset ones
             fields = self.fields
+            frequency = frequency or self.frequency
 
         # let's build the body, with all the defined fields
         body = {}
