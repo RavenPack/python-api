@@ -5,6 +5,7 @@ import requests
 from ravenpackapi.exceptions import api_method, APIException
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
 from ravenpackapi.utils.date_formats import as_datetime_str
+from ravenpackapi.util import to_curl
 from .job import Job
 from .results import Results, Result
 
@@ -48,6 +49,11 @@ class Dataset(object):
         else:
             object.__setattr__(self, field, value)
 
+    def __delitem__(self, field):
+        if field == 'id':
+            field = 'uuid'
+        del self._data[field]
+
     @property
     def id(self):  # an alias for the dataset unique id
         return self.uuid
@@ -58,11 +64,14 @@ class Dataset(object):
                 # get the missing fields
                 self.get_from_server()
             if field not in self._data:
+                # some default for fields
                 if field == 'uuid':  # we can't get the uuid of a new dataset
                     return None
                 elif field == 'fields':
                     return None
                 elif field == 'frequency':
+                    return None
+                elif field == 'product_version':
                     return None
             return self._data[field]
         else:
@@ -109,6 +118,9 @@ class Dataset(object):
             # creating a new dataset
             verb = 'Created'
             method = 'post'
+            if not self.product_version:
+                # we explicitly create as version 1.0
+                self.product_version = '1.0'
             endpoint = "/datasets"
         else:
             verb = 'Updated'
@@ -215,11 +227,18 @@ class Dataset(object):
         endpoint = "{base}/{dataset_id}".format(base=api._FEED_BASE_URL,
                                                 dataset_id=self.id)
         logger.debug("Connecting with RT feed: %s" % endpoint)
-        r = requests.get(endpoint,
-                         headers=api.headers,
-                         stream=True,
-                         )
-        r.encoding = 'utf-8'
+        response = requests.get(endpoint,
+                                headers=api.headers,
+                                stream=True,
+                                )
+        if response.status_code != 200:
+            logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
+            raise APIException(
+                'Got an error {status}: body was \'{error_message}\''.format(
+                    status=response.status_code,
+                    error_message=response.text
+                ), response=response)
+        response.encoding = 'utf-8'
 
-        for line in r.iter_lines(decode_unicode=True):
+        for line in response.iter_lines(decode_unicode=True):
             yield Result(line)

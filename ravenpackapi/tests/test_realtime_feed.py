@@ -2,6 +2,7 @@ import logging
 
 import pytest
 
+from ravenpackapi.exceptions import APIException
 from ravenpackapi import RPApi
 from ravenpackapi.models.results import Result
 
@@ -27,3 +28,10 @@ class TestRealtimeFeed():
             assert errors is False, 'Record is invalid: %s' % errors
             if received > max_received:
                 break
+
+    def test_missing_dataset(self):
+        ds = self.api.get_dataset(dataset_id='missing-dataset')
+        with pytest.raises(APIException) as e:
+            for record in ds.request_realtime():
+                pass
+        assert e.value.response.status_code == 403

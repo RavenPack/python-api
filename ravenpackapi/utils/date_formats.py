@@ -1,5 +1,7 @@
 import datetime
 
+from six import string_types
+
 from ravenpackapi.exceptions import ValidationError
 
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
@@ -15,7 +17,9 @@ ALLOWED_DATETIME_FORMATS = (
 
 
 def as_date(s):
-    if isinstance(s, str):
+    if not s:  # the date on CSV files is an empty string
+        return None
+    if isinstance(s, string_types):
         s = s.strip()
         return datetime.datetime.strptime(s, DATE_FORMAT).date()
     return s

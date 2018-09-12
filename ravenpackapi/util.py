@@ -1,3 +1,6 @@
+import csv
+import sys
+
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import MO
 
@@ -83,3 +86,14 @@ def time_intervals(date_start, date_end, split=SPLIT_MONTHLY):
             break
         yield start, end
         start = end
+
+
+def parse_csv_line(line):
+    """ Decode a line of CSV
+
+        line is unicode
+        Python 2 wants utf-8, Python 3 wants "unicode" strings
+    """
+    if sys.version_info[0] < 3:
+        line = line.encode('utf-8')
+    return list(csv.reader((line,)))[0]

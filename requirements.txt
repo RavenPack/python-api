@@ -1,3 +1,4 @@
 requests[security]
 future
+six
 python-dateutil

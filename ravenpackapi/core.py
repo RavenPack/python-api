@@ -8,18 +8,20 @@ from ravenpackapi import Dataset
 from ravenpackapi.exceptions import APIException
 from ravenpackapi.models.dataset_list import DatasetList
 from ravenpackapi.models.mapping import RPMappingResults
-from ravenpackapi.models.reference import RpEntityReference
+from ravenpackapi.models.reference import RpEntityReference, EntityTypeReference
 from ravenpackapi.models.results import Results
 from ravenpackapi.util import to_curl
-from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
+from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS, ENTITY_TYPES
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.21'
+VERSION = '1.0.22'
 
 logger = logging.getLogger("ravenpack.core")
 
 
 class RPApi(object):
+    _CHUNK_SIZE = 32 * 1024
+
     def __init__(self, api_key=None):
         self._BASE_URL = os.environ.get(
             'RP_API_ENDPOINT',
@@ -43,7 +45,7 @@ class RPApi(object):
                 'User-Agent': 'RavenPack Python v%s' % VERSION,
                 }
 
-    def request(self, endpoint, data=None, params=None, method='get'):
+    def request(self, endpoint, data=None, params=None, method='get', stream=False):
         assert method in _VALID_METHODS, \
             'Method {used} not accepted. Please choose one of {valid_methods}'.format(
                 used=method, valid_methods=", ".join(_VALID_METHODS)
@@ -57,6 +59,7 @@ class RPApi(object):
             headers=self.headers,
             data=json.dumps(data) if data else None,
             params=params,
+            stream=stream,
         )
         if self.log_curl_commands:
             logger.info("API query to %s" % to_curl(response.request))
@@ -81,18 +84,15 @@ class RPApi(object):
         )
 
     def create_dataset(self, dataset):
-        response = self.request(endpoint="/datasets",
-                                data=dataset.as_dict(),
-                                method='post')
-        dataset_id = response.json()['dataset_uuid']
-        logger.info("Created dataset %s" % dataset_id)
-
-        # we return the Dataset object just created
-        dataset.api = self
+        # be sure to create a copy
         new_dataset_data = dataset.as_dict()
-        new_dataset_data['uuid'] = dataset_id
         new_dataset = Dataset(api=self,
                               **new_dataset_data)
+        if 'uuid' in new_dataset_data:
+            del new_dataset['uuid']
+        new_dataset.save()
+        dataset_id = new_dataset.id
+        logger.info("Created dataset %s" % dataset_id)
         return new_dataset
 
     def get_dataset(self, dataset_id):
@@ -133,6 +133,22 @@ class RPApi(object):
         )
         data = response.json()
         return RpEntityReference(rp_entity_id, data)
+
+    def get_entity_type_reference(self, entity_type=None):
+        if entity_type:
+            entity_type = entity_type.upper()
+        assert entity_type in ENTITY_TYPES, "Please provide a valid entity type, one of %s" % ENTITY_TYPES
+        response = self.request(
+            endpoint="/entity-reference",
+            method='get',
+            params={"entity_type": entity_type} if entity_type else None,
+            stream=True,
+        )
+        return EntityTypeReference(http_response=response)
+
+    @staticmethod
+    def get_entity_type_reference_from_file(file_path):
+        return EntityTypeReference(file_path=file_path)
 
     def get_entity_mapping(self, identifiers):
         response = self.request(

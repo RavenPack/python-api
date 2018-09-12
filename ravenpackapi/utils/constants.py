@@ -4,3 +4,6 @@ JSON_AVAILABLE_FIELDS = {
     'having', 'filters',
     'product', 'product_version',
 }
+
+ENTITY_TYPES = {None, "CMDT", "COMP", "CURR", "NATL", "ORGA",
+                "ORGT", "PEOP", "PLCE", "PROD", "TEAM", "POSI", "SRCE"}

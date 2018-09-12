@@ -6,7 +6,7 @@ from time import sleep
 import requests
 
 from ravenpackapi.exceptions import api_method, APIException, DataFileTimeout
-from ravenpackapi.util import to_curl
+from ravenpackapi.util import to_curl, parse_csv_line
 
 logger = logging.getLogger(__name__)
 
@@ -123,5 +123,5 @@ class Job(object):
             headers = next(iterator)  # discard the headers
 
             for line in iterator:
-                fields = list(csv.reader([line.decode('utf-8')]))[0]
+                fields = parse_csv_line(line)
                 yield fields
