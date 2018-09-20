@@ -125,3 +125,8 @@ class Job(object):
             for line in iterator:
                 fields = parse_csv_line(line)
                 yield fields
+
+    def __iter__(self):
+        # this will be yield from in Py3
+        for record in self.iterate_results():
+            yield record

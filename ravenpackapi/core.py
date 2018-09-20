@@ -14,7 +14,7 @@ from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS, ENTITY_TYPES
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.22'
+VERSION = '1.0.23'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -50,7 +50,6 @@ class RPApi(object):
             'Method {used} not accepted. Please choose one of {valid_methods}'.format(
                 used=method, valid_methods=", ".join(_VALID_METHODS)
             )
-        logger.debug("Request to %s" % endpoint)
         requests_call = getattr(requests, method)
         logger.debug("Request {method} to {endpoint}".format(method=method,
                                                              endpoint=endpoint))
