@@ -82,9 +82,7 @@ class RPApi(object):
                 response.json()['datasets'])
         )
 
-        # Wasn't clear that when calling this function a class object was returned
-        # looking to return just a list of the datasets and its associated info.
-        # This change doesn't need to happen, but I had to dig through the source code
+        # Returns either the dataset class or the datasets
         if options == 'by_name':
             return datasets.by_name
         if options == 'by_id':
