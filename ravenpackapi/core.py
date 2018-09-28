@@ -71,16 +71,26 @@ class RPApi(object):
                 ), response=response)
         return response
 
-    def list_datasets(self, scope=None, tags=None):
+    def list_datasets(self, scope=None, tags=None, options=None):
         """ Return a DataSetList of datasets in the scope """
         response = self.request('/datasets', params=dict(
             tags=tags or None,
             scope=scope or 'private',
         ))
-        return DatasetList(
+        datasets = DatasetList(
             map(lambda item: Dataset.from_dict(item, api=self),
                 response.json()['datasets'])
         )
+
+        # Wasn't clear that when calling this function a class object was returned
+        # looking to return just a list of the datasets and its associated info.
+        # This change doesn't need to happen, but I had to dig through the source code
+        if options == 'by_name':
+            return datasets.by_name
+        if options == 'by_id':
+            return datasets.by_id
+        else:
+            return datasets
 
     def create_dataset(self, dataset):
         # be sure to create a copy
@@ -159,3 +169,5 @@ class RPApi(object):
         )
         data = response.json()
         return RPMappingResults(data)
+
+
