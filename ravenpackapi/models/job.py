@@ -1,11 +1,13 @@
-import csv
 import datetime
 import logging
 from time import sleep
 
 import requests
 
-from ravenpackapi.exceptions import api_method, APIException, DataFileTimeout
+from ravenpackapi.exceptions import (api_method,
+                                     APIException,
+                                     DataFileTimeout,
+                                     JobNotProcessing)
 from ravenpackapi.util import to_curl, parse_csv_line
 
 logger = logging.getLogger(__name__)
@@ -55,7 +57,20 @@ class Job(object):
                 "token": token,
             },
         )
-        self._data.update(response.json())
+        json = response.json()
+        self._data.update(json)
+        return json.get('status')
+
+    @api_method
+    def cancel(self):
+        token = self.token
+        response = self.api.request(
+            endpoint="/jobs/%s" % token,
+            method='delete'
+        )
+        response.json()
+        self._data.update({"status": 'cancelled'})
+        return self.status
 
     @api_method
     def wait_for_completion(self, timeout_seconds=None):
@@ -70,6 +85,9 @@ class Job(object):
         while True:
             if self.is_ready:
                 break
+            if not self.is_processing:
+                raise JobNotProcessing("The job went in an error state: %s" % self.status,
+                                       status=self.status)
             sleep(self._FILE_AVAILABILIY_SECONDS_DELAY)
             try:
                 self.get_status()

@@ -3,6 +3,7 @@ from ravenpackapi import RPApi, Dataset
 
 class TestEncoding(object):
     api = RPApi()
+    ds = None
 
     @classmethod
     def setup_class(cls):

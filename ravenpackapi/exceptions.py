@@ -18,6 +18,13 @@ class DataFileTimeout(Exception):
     pass
 
 
+class JobNotProcessing(Exception):
+    def __init__(self, *args, **kwargs):
+        status = kwargs.pop('status', None)
+        super(JobNotProcessing, self).__init__(*args)
+        self.status = status
+
+
 def api_method(func):
     @wraps(func)
     def decorated_func(instance, *args, **kwargs):
