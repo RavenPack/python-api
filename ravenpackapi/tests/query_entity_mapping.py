@@ -27,7 +27,7 @@ class TestEntityMapping(object):
         universe = [
             "RavenPack",
             {'ticker': 'AAPL'},
-            'California USA',
+            'California, U.S.',
             {  # Amazon, specifying various fields
                 "client_id": "12345-A",
                 "date": "2017-01-01",
@@ -50,3 +50,12 @@ class TestEntityMapping(object):
         ]
         assert len(mapping.errors) == 1
         assert mapping.errors[0].request == invalid_entity_request
+
+    def test_matching_by_cusip(self):
+        entities = [{'cusip': '037833100', },
+                    {'cusip': '48127A161'},
+                    {'cusip': '25179M103'}]
+        api = self.api
+        mapping = api.get_entity_mapping(entities)
+        assert not mapping.errors
+        assert len(mapping.matched) == len(mapping.submitted) == 3

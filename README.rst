@@ -39,6 +39,26 @@ environment variable or set it in your code:
 
     api = RPApi(api_key="YOUR_API_KEY")
 
+Creating a new dataset
+~~~~~~~~~~~~~~~~~~~~~~
+
+To create a dataset you can call the ``create_dataset`` method of the
+API with a Dataset instance.
+
+.. code:: python
+
+    ds = api.create_dataset(
+        Dataset(
+            name="New Dataset",
+            filters={
+                "relevance": {
+                    "$gte": 90
+                }
+            },
+        )
+    )
+    print("Dataset created", ds)
+
 Getting data from the datasets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

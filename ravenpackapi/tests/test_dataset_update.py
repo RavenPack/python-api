@@ -9,7 +9,7 @@ class TestDatasetUpdate(object):
 
     def test_create_and_update(self):
         delete_all_datasets_by_name(self.api, self.dataset_name)
-        filters = {"rp_entity_id": {"$in": ['AAAAA']}}
+        filters = {"rp_entity_id": {"$in": ['AAAAAA']}}
         dataset = Dataset(
             name=self.dataset_name,
             filters=filters,  # a dataset with a filter
@@ -20,14 +20,14 @@ class TestDatasetUpdate(object):
         dataset_id = dataset.id
 
         # change the dataset
-        new_filters = {"rp_entity_id": {"$in": ['BBBBB']}}
+        new_filters = {"rp_entity_id": {"$in": ['BBBBBB']}}
         dataset.filters = new_filters
         dataset.save()
 
         # get the dataset again
         dataset = self.api.get_dataset(dataset_id)
         assert dataset.filters == new_filters
-        new_filters = {"rp_entity_id": {"$in": ['CCCCC']}}
+        new_filters = {"rp_entity_id": {"$in": ['CCCCCC']}}
         dataset.filters = new_filters
         dataset.save()
 

@@ -3,9 +3,9 @@ import logging
 import requests
 
 from ravenpackapi.exceptions import api_method, APIException
+from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
 from ravenpackapi.utils.date_formats import as_datetime_str
-from ravenpackapi.util import to_curl
 from .job import Job
 from .results import Results, Result
 
@@ -240,5 +240,5 @@ class Dataset(object):
                 ), response=response)
         response.encoding = 'utf-8'
 
-        for line in response.iter_lines(decode_unicode=True):
+        for line in response.iter_lines(decode_unicode=True, chunk_size=1):
             yield Result(line)
