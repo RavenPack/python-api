@@ -14,13 +14,14 @@ from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS, ENTITY_TYPES
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.25'
+VERSION = '1.0.26'
 
 logger = logging.getLogger("ravenpack.core")
 
 
 class RPApi(object):
     _CHUNK_SIZE = 32 * 1024
+    common_request_params = {}
 
     def __init__(self, api_key=None):
         self._BASE_URL = os.environ.get(
@@ -59,6 +60,7 @@ class RPApi(object):
             data=json.dumps(data) if data else None,
             params=params,
             stream=stream,
+            **self.common_request_params
         )
         if self.log_curl_commands:
             logger.info("API query to %s" % to_curl(response.request))
@@ -159,3 +161,7 @@ class RPApi(object):
         )
         data = response.json()
         return RPMappingResults(data)
+
+    def get_status(self):
+        response = self.request('/status')
+        return response.json()

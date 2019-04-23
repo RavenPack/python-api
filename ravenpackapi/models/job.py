@@ -115,6 +115,7 @@ class Job(object):
             response = requests.get(job.url,
                                     headers=api.headers,
                                     stream=True,
+                                    **api.common_request_params
                                     )
             if response.status_code != 200:
                 logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
@@ -136,6 +137,7 @@ class Job(object):
             r = s.get(job.url,
                       headers=api.headers,
                       stream=True,
+                      **api.common_request_params
                       )
             iterator = r.iter_lines(chunk_size=self._CHUNK_SIZE)
             headers = next(iterator)  # discard the headers
