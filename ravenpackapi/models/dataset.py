@@ -224,8 +224,8 @@ class Dataset(object):
     @api_method
     def request_realtime(self):
         api = self.api
-        endpoint = "{base}/{dataset_id}".format(base=api._FEED_BASE_URL,
-                                                dataset_id=self.id)
+        endpoint = "{base}/{dataset_id}?keep_alive".format(base=api._FEED_BASE_URL,
+                                                           dataset_id=self.id)
         logger.debug("Connecting with RT feed: %s" % endpoint)
         response = requests.get(endpoint,
                                 headers=api.headers,
@@ -241,4 +241,5 @@ class Dataset(object):
         response.encoding = 'utf-8'
 
         for line in response.iter_lines(decode_unicode=True, chunk_size=1):
-            yield Result(line)
+            if line:  # skip empty lines to support keep-alive
+                yield Result(line)

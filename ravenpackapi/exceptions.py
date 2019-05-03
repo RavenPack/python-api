@@ -1,5 +1,7 @@
 from functools import wraps
 
+import requests
+
 
 class APIException(Exception):
     def __init__(self, *args, **kwargs):
@@ -36,4 +38,8 @@ def api_method(func):
 
 
 class ValidationError(Exception):
+    pass
+
+
+class ApiConnectionError(requests.ConnectionError):
     pass
