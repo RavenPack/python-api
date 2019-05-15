@@ -1,7 +1,6 @@
 import logging
 
 from ravenpackapi import RPApi, Dataset
-from ravenpackapi.models.job import Job
 
 logging.basicConfig(level=logging.INFO)
 # initialize the API (here we use the RP_API_KEY in os.environ)

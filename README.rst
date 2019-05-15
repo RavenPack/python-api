@@ -117,18 +117,19 @@ some time to complete.
 Streaming real-time data
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-It is possible to subscribe to a real-time stream for a dataset:
+It is possible to subscribe to a real-time stream for a dataset.
 
-.. code:: python
+Once you create a streaming connection to the real-time feed with your
+dataset, you will receive analytics records as soon as they are
+published.
 
-    ds = api.get_dataset(dataset_id='us500')
-    for record in ds.request_realtime():
-        print(record)
-        print(record.timestamp_utc, record.entity_name,
-                  record['event_relevance'])
+It is suggested to handle possible disconnection with a retry policy.
+You can find a `real-time streaming example
+here <ravenpackapi/examples/get_realtime_news.py>`__.
 
-The Result object takes care of converting the various fields to the
-appropriate type, so ``record.timestamp_utc`` will be a ``datetime``
+The Result object handles the conversion of various fields into the
+appropriate type, i.e. ``record.timestamp_utc`` will be converted to
+``datetime``
 
 Entity mapping
 ~~~~~~~~~~~~~~
@@ -185,3 +186,29 @@ an Entity given the RP\_ENTITY\_ID
     for ticker in references.tickers:
         if ticker.is_valid():
             print(ticker)
+
+Accessing the low-level requests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+RavenPack API wrapper is using the `requests
+library <https://2.python-requests.org>`__ to do HTTPS requests, you can
+set common requests parameters to all the outbound calls by setting the
+``common_request_params`` attribute.
+
+For example, to disable HTTPS certificate verification and to setup your
+internal proxy:
+
+.. code:: python
+
+    api = RPApi()
+    api.common_request_params.update(
+        dict(
+            proxies={'https': 'http://your_internal_proxy:9999'},
+            verify=False,
+        )
+    )
+
+    # use the api to do requests
+
+PS. For setting your internal proxies, requests will honor the
+HTTPS\_PROXY environment variable.
