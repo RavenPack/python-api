@@ -182,23 +182,21 @@ class Dataset(object):
                        name='JSON query for %s' % dataset_id)
 
     @api_method
-    def count(self, start_date, end_date):
+    def count(self, start_date, end_date, time_zone=None):
         """ Get the count of stories, analytics records and entities over a period
         """
         api = self.api
         dataset_id = self.id
 
         # let's build the body, with all the defined fields
-        body = {}
-        for k in JSON_AVAILABLE_FIELDS:
-            if locals().get(k) is not None:
-                body[k] = locals().get(k)
+        body = {"start_date": as_datetime_str(start_date),
+                "end_date": as_datetime_str(end_date),
+                "time_zone": time_zone}
 
         response = api.request(
             endpoint="/datafile/{dataset_uuid}/count".format(dataset_uuid=dataset_id),
             method='post',
-            data={"start_date": as_datetime_str(start_date),
-                  "end_date": as_datetime_str(end_date)}
+            data={k: v for k, v in body.items() if v is not None}
         )
         return response.json()
 
