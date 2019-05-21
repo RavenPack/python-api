@@ -4,7 +4,6 @@ import requests
 
 from ravenpackapi.exceptions import api_method, APIException
 from ravenpackapi.util import to_curl
-from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS
 from ravenpackapi.utils.date_formats import as_datetime_str
 from .job import Job
 from .results import Results, Result
@@ -16,21 +15,54 @@ class Dataset(object):
     _READ_ONLY_FIELDS = {'creation_time', 'last_modified', 'uuid'}
     _VALID_FIELDS = {'name', 'description',
                      'tags', 'product', 'product_version',
-                     'frequency', 'fields', 'filters', } | _READ_ONLY_FIELDS
+                     'frequency', 'fields', 'filters', 'tags',
+                     'having', 'custom_fields', 'conditions',
+                     } | _READ_ONLY_FIELDS
+    _NULLABLE_FIELDS = {'fields'}
 
-    def __init__(self, api=None, **kwargs):
+    def __init__(self, api=None, name=None,
+                 description=None, tags=None,
+                 product="RPA", product_version="1.0",
+                 frequency=None, fields=None, filters=None,
+                 custom_fields=None, conditions=None,
+                 having=None,
+                 uuid=None,  # id is just an alias of uuid
+                 **kwargs
+                 ):
         """
         :type api: RPApi
         """
         super(Dataset, self).__init__()
+
         if 'id' in kwargs:
-            kwargs['uuid'] = kwargs.pop('id')
-        self._data = kwargs
+            if uuid:
+                raise Exception("Please provide or the id or the uuid, not both: they are aliases")
+            uuid = kwargs['id']
+
         self.api = api
-        # the dataset can be initialized with just the uuid
+        self.product_version = product_version
+        self.product = product
+
+        self.uuid = uuid
+
+        self.name = name
+        self.description = description
+
+        self.fields = fields
+        self.filters = filters
+        self.frequency = frequency
+        self.custom_fields = custom_fields
+        self.conditions = conditions
+        self.having = having
+
+        self.tags = tags
+
+        self.creation_time = kwargs.get('creation_time')
+        self.last_modified = kwargs.get('last_modified')
+
+        # the dataset can be initialized with just the uuid and the name
         # in that case we'll ask the server for the missing info
-        additional_fields = {k for k in kwargs if k != 'uuid'}
-        self.complete_from_server = len(additional_fields) >= 1
+        self._lazy_retrieve_on_get = True
 
     @staticmethod
     def from_dict(item, api=None):
@@ -40,47 +72,45 @@ class Dataset(object):
         )
 
     def __setattr__(self, field, value):
-        if field in Dataset._READ_ONLY_FIELDS:
-            raise ValueError("The field %s is ReadOnly" % field)
         if field == 'id':
             field = 'uuid'
         if field in Dataset._VALID_FIELDS:
-            self._data[field] = value
+            super(Dataset, self).__setattr__(field, value)
         else:
             object.__setattr__(self, field, value)
 
     def __delitem__(self, field):
         if field == 'id':
             field = 'uuid'
-        del self._data[field]
+        setattr(self, field, None)
 
     @property
     def id(self):  # an alias for the dataset unique id
         return self.uuid
 
-    def __getattr__(self, field):
-        if field in Dataset._VALID_FIELDS:
-            if field not in self._data and 'uuid' in self._data:
-                # get the missing fields
-                self.get_from_server()
-            if field not in self._data:
-                # some default for fields
-                if field == 'uuid':  # we can't get the uuid of a new dataset
-                    return None
-                elif field == 'fields':
-                    return None
-                elif field == 'frequency':
-                    return None
-                elif field == 'product_version':
-                    return None
-            return self._data[field]
-        else:
-            return self.__getattribute__(field)
+    def __getattribute__(self, field):
+        """ Getting attributes we may trigger a data refresh from the server """
+        if field == 'id':  # id is an alias for uuid
+            field = 'uuid'
+
+        # print('asking for', field)
+        # value = super(Dataset, self).__getattribute__(field)
+        # return value
+
+        if field in Dataset._VALID_FIELDS and field != 'uuid':
+            value = super(Dataset, self).__getattribute__(field)
+            if (value is None
+                and self._lazy_retrieve_on_get
+                and self.uuid
+            ):
+                self.get_from_server()  # get the missing fields
+        return super(Dataset, self).__getattribute__(field)
 
     def as_dict(self):
-        valid_obj = {k: self._data[k]
-                     for k in Dataset._VALID_FIELDS
-                     if k in self._data}
+        valid_obj = {
+            k: getattr(self, k)
+            for k in Dataset._VALID_FIELDS
+        }
         return valid_obj
 
     def __str__(self):
@@ -92,17 +122,18 @@ class Dataset(object):
     def get_from_server(self, force=False):
         """ Get the dataset definition from the server,
             if needed or forced """
-        dataset_id = self.id
+        dataset_id = self.uuid
         if not dataset_id:
             raise ValueError("Please specify a dataset ID to retrieve it from server")
-        if not self.complete_from_server or force:
+        if self._lazy_retrieve_on_get or force:
             logger.debug("Getting Dataset from server %s" % dataset_id)
             response = self.api.request(
                 endpoint="/datasets/{dataset_uuid}".format(dataset_uuid=dataset_id),
             )
-            self._data = response.json()
-            self.complete_from_server = True
-        return self._data
+            for field, value in response.json().items():
+                setattr(self, field, value)
+            self._lazy_retrieve_on_get = False  # we got everything from the server
+        return self.as_dict()
 
     @api_method
     def delete(self):
@@ -128,8 +159,16 @@ class Dataset(object):
             method = 'put'
 
         # get rid of the readonly fields
-        data = {k: v for k, v in self.as_dict().items()
-                if k not in Dataset._READ_ONLY_FIELDS}
+        data = {
+            k: v for k, v in self.as_dict().items()
+            if (k not in Dataset._READ_ONLY_FIELDS
+                and v is not None
+                )
+        }
+
+        if 'frequency' in data and not 'fields' in data:
+            # fields can be null, we specify it only when frequency is also given
+            data['fields'] = self.fields
 
         response = self.api.request(
             endpoint=endpoint,
@@ -141,7 +180,8 @@ class Dataset(object):
             verb=verb,
             id=dataset_id)
         )
-        self._data['uuid'] = dataset_id
+        self._lazy_retrieve_on_get = False
+        self.uuid = dataset_id
 
     @api_method
     def json(self,
@@ -151,6 +191,9 @@ class Dataset(object):
              time_zone=None,
              frequency=None,
              having=None,
+             custom_fields=None,
+             filters=None,
+             conditions=None,
              ):
         """ Use the dataset filters to request a data
 
@@ -160,22 +203,24 @@ class Dataset(object):
         """
         api = self.api
         dataset_id = self.id
-        if fields is None:
-            # fields are required, if it's not provided we use
-            # the dataset ones
-            fields = self.fields
-            frequency = frequency or self.frequency
 
         # let's build the body, with all the defined fields
-        body = {}
-        for k in JSON_AVAILABLE_FIELDS:
-            if locals().get(k) is not None:
-                body[k] = locals().get(k)
+        body = {"start_date": as_datetime_str(start_date),
+                "end_date": as_datetime_str(end_date),
+                "time_zone": time_zone}
+        body.update(dict(
+            frequency=frequency,
+            fields=fields,
+            custom_fields=custom_fields,
+            filters=filters,
+            conditions=conditions,
+            having=having,
+        ))
 
         response = api.request(
             endpoint="/json/{dataset_uuid}".format(dataset_uuid=dataset_id),
             method='post',
-            data=body,
+            data={k: v for k, v in body.items() if v is not None},  # remove null values
         )
         data = response.json()
         return Results(data['records'],
@@ -207,7 +252,8 @@ class Dataset(object):
                          tags=None,
                          notify=False,
                          allow_empty=True,
-                         time_zone='UTC'
+                         time_zone='UTC',
+                         fields=None,
                          ):
         """ Request a datafile with data in the requested date
             This is asyncronous: it returns a job that you can wait for
@@ -221,13 +267,13 @@ class Dataset(object):
             "compressed": compressed,
             "notify": notify,
             "time_zone": time_zone,
+            "tags": tags,
+            "fields": fields,
         }
-        if tags:
-            data['tags'] = tags
         try:
             response = api.request(
                 endpoint="/datafile/%s" % self.id,
-                data=data,
+                data={k: v for k, v in data.items() if v is not None},  # remove null values,
                 method='post',
             )
         except APIException as e:

@@ -1,3 +1,5 @@
+import pytest
+
 from ravenpackapi import RPApi, Dataset
 
 
@@ -21,6 +23,7 @@ class TestEncoding(object):
         end_date='2018-05-01 21:52',
     )
 
+    @pytest.mark.json
     def test_json_iterate(self):
         self.api.log_curl_commands = True
 

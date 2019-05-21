@@ -1,7 +1,10 @@
+import pytest
+
 from ravenpackapi import RPApi, Dataset
 from ravenpackapi.models.results import Results
 
 
+@pytest.mark.json
 class TestDatasetJson(object):
     api = RPApi()
 
@@ -49,3 +52,73 @@ class TestDatasetJson(object):
             granular_dataset.json('2018-01-01 00:00', '2018-01-02 00:00')
         finally:
             granular_dataset.delete()
+
+
+@pytest.mark.json
+class TestConditions(object):
+    api = RPApi()
+    ds = None
+
+    @classmethod
+    def setup_class(cls):
+        cls.ds = cls.api.create_dataset(Dataset.from_dict(
+            {
+                "name": "Test custom fields",
+                "product": "rpa",
+                "product_version": "1.0",
+                "fields": [
+                    "timestamp_utc",
+                    "rp_entity_id",
+                    "entity_name",
+                    "AVG_REL"
+                ],
+                "filters": {
+                },
+                "custom_fields": [
+                    {
+                        "AVG_REL": {
+                            "avg": {
+                                "field": "RELEVANCE",
+                                "mode": "daily"
+                            }
+                        }
+                    }
+                ],
+                "conditions": {
+                    "$and": [
+                        {
+                            "AVG_REL": {
+                                "$gt": 30
+                            }
+                        },
+                        {
+                            "rp_entity_id": {
+                                "$in": [
+                                    "ROLLUP"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "frequency": "daily",
+                "tags": []
+            }
+        ))
+
+    def test_custom_fields_and_conditions(self):
+        self.api.log_curl_commands = True
+        ds = self.ds
+
+        assert ds.frequency == 'daily'
+        dataset_id = ds.id
+        assert dataset_id is not None, "Dataset should be saved"
+
+        data = ds.json('2019-05-01', '2019-05-02')
+        assert len(data) == 1
+        record = next(iter(data))
+        assert record['rp_entity_id'] == "ROLLUP"
+        assert record['avg_rel'] > 30
+
+    @classmethod
+    def teardown_class(cls):
+        cls.ds.delete()

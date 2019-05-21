@@ -1,7 +1,10 @@
+import pytest
+
 from ravenpackapi import RPApi, Dataset
 from ravenpackapi.utils.helpers import delete_all_datasets_by_name
 
 
+@pytest.mark.datasets
 class TestDatasetUpdate(object):
     """ try to Create a dataset, Read it Update it and Delete it"""
     api = RPApi()

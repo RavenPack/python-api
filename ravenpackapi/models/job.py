@@ -128,7 +128,7 @@ class Job(object):
                     output.write(chunk)
 
     @api_method
-    def iterate_results(self):
+    def iterate_results(self, include_headers=False):
         api = self.api
         job = self  # just to be clear
         job.wait_for_completion()
@@ -140,7 +140,11 @@ class Job(object):
                       **api.common_request_params
                       )
             iterator = r.iter_lines(chunk_size=self._CHUNK_SIZE)
+
             headers = next(iterator)  # discard the headers
+
+            if include_headers:
+                yield parse_csv_line(headers)
 
             for line in iterator:
                 fields = parse_csv_line(line)

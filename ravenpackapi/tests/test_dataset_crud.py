@@ -1,11 +1,14 @@
 import logging
 
+import pytest
+
 from ravenpackapi import RPApi, Dataset
 from ravenpackapi.utils.helpers import delete_all_datasets_by_name
 
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.datasets
 class TestDatasetCRUD(object):
     """ try to Create a dataset, Read it Update it and Delete it"""
     api = RPApi()

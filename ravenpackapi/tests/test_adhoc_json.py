@@ -1,7 +1,10 @@
+import pytest
+
 from ravenpackapi import RPApi
 from ravenpackapi.models.results import Results
 
 
+@pytest.mark.json
 class TestAdHocJson(object):
     api = RPApi()
 
