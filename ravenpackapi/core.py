@@ -14,7 +14,7 @@ from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS, ENTITY_TYPES
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.29'
+VERSION = '1.0.30'
 
 logger = logging.getLogger("ravenpack.core")
 

@@ -295,6 +295,7 @@ class Dataset(object):
         response = requests.get(endpoint,
                                 headers=api.headers,
                                 stream=True,
+                                **api.common_request_params
                                 )
         if response.status_code != 200:
             logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
