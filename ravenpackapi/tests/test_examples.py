@@ -56,7 +56,7 @@ class TestConditions(object):
             api=self.api,
             name="copy of the us30 dataset",
             filters=source_dataset.filters,
-            fields=source_dataset.fields,
+            fields=['timestamp_utc', 'rp_entity_id', 'avg_sentiment'],
             custom_fields=[{"avg_sentiment": {
                 "avg": {
                     "field": "EVENT_SENTIMENT_SCORE",
