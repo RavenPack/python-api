@@ -166,7 +166,7 @@ class Dataset(object):
                 )
         }
 
-        if 'frequency' in data and not 'fields' in data:
+        if 'frequency' in data and 'fields' not in data:
             # fields can be null, we specify it only when frequency is also given
             data['fields'] = self.fields
 

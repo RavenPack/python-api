@@ -11,10 +11,11 @@ from ravenpackapi.models.mapping import RPMappingResults
 from ravenpackapi.models.reference import RpEntityReference, EntityTypeReference
 from ravenpackapi.models.results import Results
 from ravenpackapi.util import to_curl
-from ravenpackapi.utils.constants import JSON_AVAILABLE_FIELDS, ENTITY_TYPES
+from ravenpackapi.utils.constants import ENTITY_TYPES
+from ravenpackapi.utils.date_formats import as_datetime_str
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.30'
+VERSION = '1.0.31'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -105,24 +106,35 @@ class RPApi(object):
     def json(self,
              start_date,
              end_date,
-             fields,
+             fields=None,
              filters=None,
              time_zone=None,
              frequency='granular',
              having=None,
+             custom_fields=None,
+             conditions=None,
              product='rpa',
              product_version='1.0',
              ):
         # let's build the body, with all the defined fields
-        body = {}
-        for k in JSON_AVAILABLE_FIELDS:
-            if locals().get(k) is not None:
-                body[k] = locals().get(k)
+        body = {"start_date": as_datetime_str(start_date),
+                "end_date": as_datetime_str(end_date),
+                "time_zone": time_zone}
+        body.update(dict(
+            frequency=frequency,
+            fields=fields,
+            custom_fields=custom_fields,
+            filters=filters,
+            conditions=conditions,
+            having=having,
+            product=product,
+            product_version=product_version,
+        ))
 
         response = self.request(
             endpoint="/json",
             method='post',
-            data=body,
+            data={k: v for k, v in body.items() if v is not None},  # remove null values
         )
         data = response.json()
         return Results(data['records'],
