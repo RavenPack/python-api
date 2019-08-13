@@ -13,13 +13,8 @@ api_key = os.environ['RP_API_KEY']  # set your API KEY here
 api = RPApi(api_key)
 
 flat_type = 'companies'  # can be 'companies' or 'full'
-full_list_api_url = 'https://app.ravenpack.com/downloads/history-list/%s' % flat_type
-response = requests.get(
-    full_list_api_url,
-    params=dict(token=api_key)
-)
-response.raise_for_status()
-for flat_file in response.json():
+flat_list = api.get_flatfile_list(flat_type)
+for flat_file in flat_list:
     local_filename = flat_file['name']
     output_filename = '%s.combined.csv' % local_filename
     if not os.path.isfile(output_filename):

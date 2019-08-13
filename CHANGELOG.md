@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.0.32 (2019-08-13)
+The RPApi instance gets two new methods:
+
+* `get_document_url` to retrieve the document url from a RP_STORY_ID
+* `get_flatfile_list` to retrieve the list of the available flatfiles for `companies`
+ or `full` (for all the entities)
+
 ## v1.0.29 (2019-05-21)
 **dataset creation explicit parameters**
 

@@ -15,7 +15,7 @@ from ravenpackapi.utils.constants import ENTITY_TYPES
 from ravenpackapi.utils.date_formats import as_datetime_str
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.31'
+VERSION = '1.0.32'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -176,4 +176,15 @@ class RPApi(object):
 
     def get_status(self):
         response = self.request('/status')
+        return response.json()
+
+    def get_document_url(self, rp_story_id):
+        response = self.request('/document/%s/url' % rp_story_id)
+        return response.json()['url']
+
+    def get_flatfile_list(self, flatfile_type):
+        assert flatfile_type in {
+            'companies', 'full'
+        }
+        response = self.request('/history/%s' % flatfile_type)
         return response.json()
