@@ -188,3 +188,22 @@ class RPApi(object):
         }
         response = self.request('/history/%s' % flatfile_type)
         return response.json()
+
+    def get_flatfile(self, flatfile_type, flatfile_id):
+        """ Request the flatfile and return a streammable response """
+        return self.request(
+            '/history/%(flatfile_type)s/%(flatfile_id)s' % dict(
+                flatfile_type=flatfile_type,
+                flatfile_id=flatfile_id,
+            ),
+            stream=True,
+        )
+
+    def save_flatfile(self, flatfile_type, flatfile_id, output_filename, overwrite=True):
+        if not overwrite and os.path.isfile(output_filename):
+            return False  # the file already exists
+
+        with self.get_flatfile(flatfile_type, flatfile_id) as flatzip:
+            with open(output_filename, 'wb') as f:
+                for chunk in flatzip.iter_content(chunk_size=8192):
+                    f.write(chunk)
