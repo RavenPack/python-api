@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 # initialize the API (here we use the RP_API_KEY in os.environ)
 api = RPApi()
-api.common_request_params['timeout'] = (10, None)  # set a timeout on connection
 
 # query the realtime feed
 ds = api.get_dataset(dataset_id='us500')

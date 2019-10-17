@@ -2,7 +2,7 @@ import logging
 
 import requests
 
-from ravenpackapi.exceptions import api_method, APIException
+from ravenpackapi.exceptions import api_method, APIException, ApiConnectionError
 from ravenpackapi.util import to_curl
 from ravenpackapi.utils.date_formats import as_datetime_str
 from .job import Job
@@ -292,20 +292,23 @@ class Dataset(object):
         endpoint = "{base}/{dataset_id}?keep_alive".format(base=api._FEED_BASE_URL,
                                                            dataset_id=self.id)
         logger.debug("Connecting with RT feed: %s" % endpoint)
-        response = requests.get(endpoint,
-                                headers=api.headers,
-                                stream=True,
-                                **api.common_request_params
-                                )
-        if response.status_code != 200:
-            logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
-            raise APIException(
-                'Got an error {status}: body was \'{error_message}\''.format(
-                    status=response.status_code,
-                    error_message=response.text
-                ), response=response)
-        response.encoding = 'utf-8'
+        try:
+            response = requests.get(endpoint,
+                                    headers=api.headers,
+                                    stream=True,
+                                    **api.common_request_params
+                                    )
+            if response.status_code != 200:
+                logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
+                raise APIException(
+                    'Got an error {status}: body was \'{error_message}\''.format(
+                        status=response.status_code,
+                        error_message=response.text
+                    ), response=response)
+            response.encoding = 'utf-8'
 
-        for line in response.iter_lines(decode_unicode=True, chunk_size=1):
-            if line:  # skip empty lines to support keep-alive
-                yield Result(line)
+            for line in response.iter_lines(decode_unicode=True, chunk_size=1):
+                if line:  # skip empty lines to support keep-alive
+                    yield Result(line)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            raise ApiConnectionError()

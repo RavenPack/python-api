@@ -15,14 +15,16 @@ from ravenpackapi.utils.constants import ENTITY_TYPES
 from ravenpackapi.utils.date_formats import as_datetime_str
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.32'
+VERSION = '1.0.33'
 
 logger = logging.getLogger("ravenpack.core")
 
 
 class RPApi(object):
     _CHUNK_SIZE = 32 * 1024
-    common_request_params = {}
+    common_request_params = {
+        "timeout": (10, 60),  # 10 seconds on connection - 60 on read
+    }
 
     def __init__(self, api_key=None):
         self._BASE_URL = os.environ.get(

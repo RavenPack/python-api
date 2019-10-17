@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.33 (2019-10-17)
+
+* A default timeout of 10" on connection and 60" on silence has been added to all the API calls
+* Retrieve or save a flatfile using the new methods `get_flatfile` and `save_flatfile`.
+See `get_historical_flat_list.py` for a complete example.
+
 ## v1.0.32 (2019-08-13)
 The RPApi instance gets two new methods:
 
