@@ -75,6 +75,7 @@ class Dataset(object):
         if field == 'id':
             field = 'uuid'
         if field in Dataset._VALID_FIELDS:
+            self._lazyload()
             super(Dataset, self).__setattr__(field, value)
         else:
             object.__setattr__(self, field, value)
@@ -88,6 +89,12 @@ class Dataset(object):
     def id(self):  # an alias for the dataset unique id
         return self.uuid
 
+    def _lazyload(self):
+        if (getattr(self, '_lazy_retrieve_on_get', False)  # dynamic, we check this also during object creation
+            and self.uuid
+        ):
+            self.get_from_server()  # get the missing fields
+
     def __getattribute__(self, field):
         """ Getting attributes we may trigger a data refresh from the server """
         if field == 'id':  # id is an alias for uuid
@@ -99,11 +106,8 @@ class Dataset(object):
 
         if field in Dataset._VALID_FIELDS and field != 'uuid':
             value = super(Dataset, self).__getattribute__(field)
-            if (value is None
-                and self._lazy_retrieve_on_get
-                and self.uuid
-            ):
-                self.get_from_server()  # get the missing fields
+            if value is None:
+                self._lazyload()
         return super(Dataset, self).__getattribute__(field)
 
     def as_dict(self):
@@ -130,9 +134,9 @@ class Dataset(object):
             response = self.api.request(
                 endpoint="/datasets/{dataset_uuid}".format(dataset_uuid=dataset_id),
             )
+            self._lazy_retrieve_on_get = False  # we got everything from the server
             for field, value in response.json().items():
                 setattr(self, field, value)
-            self._lazy_retrieve_on_get = False  # we got everything from the server
         return self.as_dict()
 
     @api_method

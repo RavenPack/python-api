@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.34 (2019-11-11)
+Retrieve a lazy-loaded dataset when setting one of its paramters.
+
 ## v1.0.33 (2019-10-17)
 
 * A default timeout of 10" on connection and 60" on silence has been added to all the API calls
