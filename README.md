@@ -158,6 +158,14 @@ for ticker in references.tickers:
         print(ticker)
 ```
 
+### Text Analytics
+
+Analyse your own content using RavenPack’s proprietary NLP technology.
+
+The API for analyzing your internal content is still in beta and may change in the future.
+You can request an early access and [see an example of usage here](ravenpackapi/examples/text_extraction.py).
+
+
 ### Accessing the low-level requests
 
 RavenPack API wrapper is using the [requests library](https://2.python-requests.org) to do HTTPS requests,

@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.35 (2020-02-22)
+Initial support for the Upload-API endpoints  
+
 ## v1.0.34 (2019-11-11)
 Retrieve a lazy-loaded dataset when setting one of its paramters.
 

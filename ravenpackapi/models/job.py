@@ -53,7 +53,7 @@ class Job(object):
         token = self.token
         response = self.api.request(
             endpoint="/jobs/%s" % token,
-            data={
+            json={
                 "token": token,
             },
         )

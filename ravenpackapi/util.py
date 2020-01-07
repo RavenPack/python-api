@@ -15,7 +15,9 @@ SPLIT_DAILY = 'daily'
 
 def parts_to_curl(method, endpoint, headers, data=None):
     ignored_headers = (
-        'Accept', 'Accept-Encoding', 'Connection', 'Content-Type', 'Content-Length', 'User-Agent')
+        'Accept', 'Accept-Encoding', 'Connection',
+        'Content-Type', 'Content-Length', 'User-Agent'
+    )
     headers = ["'{0}:{1}'".format(k, v) for k, v in headers.items() if
                k not in ignored_headers]
     headers = " -H ".join(sorted(headers))

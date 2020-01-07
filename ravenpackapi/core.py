@@ -10,12 +10,13 @@ from ravenpackapi.models.dataset_list import DatasetList
 from ravenpackapi.models.mapping import RPMappingResults
 from ravenpackapi.models.reference import RpEntityReference, EntityTypeReference
 from ravenpackapi.models.results import Results
+from ravenpackapi.upload.module import UploadApi
 from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import ENTITY_TYPES
 from ravenpackapi.utils.date_formats import as_datetime_str
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.34'
+VERSION = '1.0.35'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -34,6 +35,9 @@ class RPApi(object):
             'RP_FEED_ENDPOINT',
             'https://feed.ravenpack.com/1.0/json'
         )
+        self._UPLOAD_BASE_URL = os.environ.get(
+            'RP_UPLOAD_ENDPOINT',
+            'https://upload.ravenpack.com/1.0')
         api_key = api_key or os.environ.get('RP_API_KEY')
         if api_key is None:
             raise ValueError(
@@ -42,6 +46,7 @@ class RPApi(object):
             )
         self.api_key = api_key
         self.log_curl_commands = True
+        self.upload = UploadApi(self)
 
     @property
     def headers(self):
@@ -49,7 +54,11 @@ class RPApi(object):
                 'User-Agent': 'RavenPack Python v%s' % VERSION,
                 }
 
-    def request(self, endpoint, data=None, params=None, method='get', stream=False):
+    def request(self, endpoint, data=None, json=None,
+                params=None, method='get', stream=False,
+                request_params=None,
+                headers=None,
+                except_on_fail=True):
         assert method in _VALID_METHODS, \
             'Method {used} not accepted. Please choose one of {valid_methods}'.format(
                 used=method, valid_methods=", ".join(_VALID_METHODS)
@@ -57,17 +66,27 @@ class RPApi(object):
         requests_call = getattr(requests, method)
         logger.debug("Request {method} to {endpoint}".format(method=method,
                                                              endpoint=endpoint))
+        if endpoint.startswith("http://") or endpoint.startswith("https://"):
+            # calling another host
+            url = endpoint
+        else:
+            url = self._BASE_URL + endpoint
+
+        extra_params = self.common_request_params.copy()
+        if request_params:
+            extra_params.update(request_params)
         response = requests_call(
-            url=self._BASE_URL + endpoint,
-            headers=self.headers,
-            data=json.dumps(data) if data else None,
+            url=url,
+            headers=self.headers if headers is None else headers,
+            data=data,
+            json=json,
             params=params,
             stream=stream,
-            **self.common_request_params
+            **extra_params
         )
         if self.log_curl_commands:
             logger.info("API query to %s" % to_curl(response.request))
-        if response.status_code != 200:
+        if except_on_fail and response.status_code != 200:
             logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
             raise APIException(
                 'Got an error {status}: body was \'{error_message}\''.format(
@@ -136,7 +155,7 @@ class RPApi(object):
         response = self.request(
             endpoint="/json",
             method='post',
-            data={k: v for k, v in body.items() if v is not None},  # remove null values
+            json={k: v for k, v in body.items() if v is not None},  # remove null values
         )
         data = response.json()
         return Results(data['records'],
@@ -169,7 +188,7 @@ class RPApi(object):
         response = self.request(
             endpoint="/entity-mapping",
             method='post',
-            data={
+            json={
                 "identifiers": identifiers
             },
         )

@@ -176,7 +176,7 @@ class Dataset(object):
 
         response = self.api.request(
             endpoint=endpoint,
-            data=data,
+            json=data,
             method=method
         )
         dataset_id = response.json()['dataset_uuid']
@@ -224,7 +224,7 @@ class Dataset(object):
         response = api.request(
             endpoint="/json/{dataset_uuid}".format(dataset_uuid=dataset_id),
             method='post',
-            data={k: v for k, v in body.items() if v is not None},  # remove null values
+            json={k: v for k, v in body.items() if v is not None},  # remove null values
         )
         data = response.json()
         return Results(data['records'],
@@ -245,7 +245,7 @@ class Dataset(object):
         response = api.request(
             endpoint="/datafile/{dataset_uuid}/count".format(dataset_uuid=dataset_id),
             method='post',
-            data={k: v for k, v in body.items() if v is not None}
+            json={k: v for k, v in body.items() if v is not None}
         )
         return response.json()
 
@@ -277,7 +277,7 @@ class Dataset(object):
         try:
             response = api.request(
                 endpoint="/datafile/%s" % self.id,
-                data={k: v for k, v in data.items() if v is not None},  # remove null values,
+                json={k: v for k, v in data.items() if v is not None},  # remove null values,
                 method='post',
             )
         except APIException as e:
