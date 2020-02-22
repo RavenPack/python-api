@@ -187,6 +187,15 @@ an Entity given the RP\_ENTITY\_ID
         if ticker.is_valid():
             print(ticker)
 
+Text Analytics
+~~~~~~~~~~~~~~
+
+Analyse your own content using RavenPack’s proprietary NLP technology.
+
+The API for analyzing your internal content is still in beta and may
+change in the future. You can request an early access and `see an
+example of usage here <ravenpackapi/examples/text_extraction.py>`__.
+
 Accessing the low-level requests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
