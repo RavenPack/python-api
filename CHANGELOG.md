@@ -1,7 +1,11 @@
 # Changelog
 
+## v1.0.36 (2020-05-14)
+* Text-Analytics API endpoint updated: folders & richer metadata
+* Extended error handling to support Feed disconnection problems
+
 ## v1.0.35 (2020-02-22)
-Initial support for the Upload-API endpoints  
+Initial support for the Text-Analytics API endpoints
 
 ## v1.0.34 (2019-11-11)
 Retrieve a lazy-loaded dataset when setting one of its paramters.

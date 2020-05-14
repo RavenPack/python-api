@@ -14,8 +14,8 @@ from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import ENTITY_TYPES
 from ravenpackapi.utils.date_formats import as_datetime_str
 
-_VALID_METHODS = ('get', 'post', 'put', 'delete')
-VERSION = '1.0.35'
+_VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
+VERSION = '1.0.36'
 
 logger = logging.getLogger("ravenpack.core")
 

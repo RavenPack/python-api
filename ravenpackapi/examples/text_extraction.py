@@ -9,12 +9,13 @@ for f in api.upload.list():
 
 # upload a file to access the analytics
 f = api.upload.file("_orig.doc",
-                    # properties={"primary_entity": "Ravenpack"}
+                    # properties={"primary_entity": "RavenPack"}
                     )
+f.wait_for_completion()
+
 # we can also get it if we know the id
 # f = api.upload.get('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
 
-f.wait_for_completion()
 # get back the analytics found in the document
 f.save_analytics("_analytics.json")
 
@@ -25,7 +26,7 @@ f.save_annotated("us30orig.xml")
 f.save_original("_orig.doc")
 
 # given a file we can set tags
-# f.set_tags(['file tag'])
+# f.set_metadata(tags=['file tag'])
 
 # ... or delete it
 # f.delete()

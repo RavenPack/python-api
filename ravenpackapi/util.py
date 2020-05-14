@@ -1,4 +1,5 @@
 import csv
+import logging
 import sys
 
 import six
@@ -11,6 +12,7 @@ SPLIT_YEARLY = 'yearly'
 SPLIT_MONTHLY = 'monthly'
 SPLIT_WEEKLY = 'weekly'
 SPLIT_DAILY = 'daily'
+logger = logging.getLogger("ravenpack.util")
 
 
 def parts_to_curl(method, endpoint, headers, data=None):
@@ -37,10 +39,15 @@ def parts_to_curl(method, endpoint, headers, data=None):
 def to_curl(request):
     if not request:
         return 'No request'
+    try:
+        data = request.body.decode() if getattr(request, 'body') else None
+    except Exception as e:
+        logger.debug("Cannot convert data to curl: %s" % e)
+        data = "?"
     return parts_to_curl(request.method,
                          request.url,
                          request.headers,
-                         request.body if getattr(request, 'body') else None)
+                         data=data)
 
 
 def time_intervals(date_start, date_end, split=SPLIT_MONTHLY):

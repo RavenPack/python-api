@@ -1,7 +1,7 @@
-import json
 import os
 
-from ravenpackapi.upload.models import File
+from ravenpackapi.upload.models import (File, FILE_FIELDS,
+                                        Folder, FOLDER_FIELDS)
 from ravenpackapi.utils.date_formats import as_datetime_str
 
 
@@ -15,6 +15,7 @@ class UploadApi(object):
              tags=None,
              status=None,
              filename=None,
+             page_size=50,
              ):
         params = dict(
             start_date=as_datetime_str(start_date),
@@ -25,6 +26,7 @@ class UploadApi(object):
         )
 
         # the list of files is splitted in pages - let's collect them
+        get_next, offset = False, 0
         while True:
             response = self.api.request('%s/files' % self.api._UPLOAD_BASE_URL,
                                         params={k: v
@@ -32,16 +34,20 @@ class UploadApi(object):
                                                 if v is not None})
             data = response.json()
             if 'results' in data:
-                for r in data['results']:
-                    yield File(r['file_id'],
-                               status=r.get('status'),
-                               name=r.get('name'),
-                               api=self.api,
-                               )
-            if data.get('next_page_key'):  # next page
-                params['next_page_key'] = json.dumps(data['next_page_key'])
-            else:
+                results = data['results']
+                for r in results:
+                    get_next = len(results) == page_size
+                    file_params = {
+                        field: r.get(field) for field in FILE_FIELDS
+                    }
+                    yield File(
+                        api=self.api,
+                        **file_params
+                    )
+            if not get_next:
                 break
+            offset += page_size
+            params['offset'] = offset
 
     def file(self, name_or_file_handler, properties=None):
         """ Upload a file - file can be either a filename or a file handler """
@@ -53,10 +59,10 @@ class UploadApi(object):
         else:
             filepath = name_or_file_handler.name
             fh = name_or_file_handler
-        filename = os.path.basename(filepath)
+        file_name = os.path.basename(filepath)
 
         params = dict(
-            filename=filename,
+            filename=file_name,
             properties=properties
         )
 
@@ -85,7 +91,19 @@ class UploadApi(object):
             fh.close()
         return File(file_id,
                     api=self.api,
-                    name=filename)
+                    file_name=file_name)
 
     def get(self, file_id):
         return File(file_id, api=self.api)
+
+    def list_folders(self):
+        response = self.api.request('%s/folders' % self.api._UPLOAD_BASE_URL)
+        data = response.json()
+        for r in data:
+            folder_params = {
+                field: r.get(field) for field in FOLDER_FIELDS
+            }
+            yield Folder(**folder_params)
+
+    def folder_get(self, folder_id):
+        return Folder(folder_id, api=self.api)
