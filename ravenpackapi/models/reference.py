@@ -1,6 +1,7 @@
 import datetime
 import io
 import logging
+from operator import itemgetter
 
 from ravenpackapi.util import parse_csv_line
 from ravenpackapi.utils.date_formats import as_date
@@ -70,6 +71,7 @@ class RpEntityReference(object):
         data_field = _MAPPED_FIELDS.get(field)
         if data_field:
             metadata_records = self._data.get(data_field, [])
+            metadata_records.sort(key=itemgetter('range_start'))
             return [
                 RPEntityMetadata(d['data_value'],
                                  d['range_start'],
