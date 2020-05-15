@@ -1,6 +1,7 @@
 import logging
 
 import requests
+import urllib3
 
 from ravenpackapi.exceptions import api_method, APIException, ApiConnectionError
 from ravenpackapi.util import to_curl
@@ -314,5 +315,8 @@ class Dataset(object):
             for line in response.iter_lines(decode_unicode=True, chunk_size=1):
                 if line:  # skip empty lines to support keep-alive
                     yield Result(line)
-        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.ChunkedEncodingError,
+                urllib3.exceptions.ProtocolError,
+                requests.exceptions.Timeout):
             raise ApiConnectionError()
