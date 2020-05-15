@@ -14,7 +14,7 @@ class UploadApi(object):
              end_date=None,
              tags=None,
              status=None,
-             filename=None,
+             file_name=None,
              page_size=50,
              ):
         params = dict(
@@ -22,7 +22,7 @@ class UploadApi(object):
             end_date=as_datetime_str(end_date),
             tags=tags,
             status=status,
-            filename=filename,
+            file_name=file_name,
         )
 
         # the list of files is splitted in pages - let's collect them
