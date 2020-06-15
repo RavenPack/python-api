@@ -52,11 +52,16 @@ class File(object):
     @api_method
     def get_metadata(self, force_refresh=False):
         if self.file_name and not force_refresh:  # we already have the file metadata
-            return
-        response = self.api.request('%s/files/%s/metadata' % (self.api._UPLOAD_BASE_URL, self.file_id))
-        metadata = response.json()
-        for field in FILE_FIELDS:
-            setattr(self, field, metadata.get(field))
+            pass
+        else:
+            response = self.api.request('%s/files/%s/metadata' % (self.api._UPLOAD_BASE_URL, self.file_id))
+            metadata = response.json()
+            for field in FILE_FIELDS:
+                setattr(self, field, metadata.get(field))
+        return {  # return the known metadata
+            field: getattr(self, field)
+            for field in FILE_FIELDS
+        }
 
     @api_method
     def save_original(self, filename):
@@ -93,7 +98,8 @@ class File(object):
         return response
 
     @api_method
-    def set_metadata(self, file_name=None,
+    def set_metadata(self,
+                     file_name=None,
                      folder_id=None,
                      trashed=None, starred=None,
                      tags=None
@@ -111,6 +117,14 @@ class File(object):
         while self.status not in {"COMPLETED", "DELETED"}:
             sleep(1)
             self.get_status()
+
+    def save(self):
+        self.set_metadata(
+            file_name=self.file_name,
+            folder_id=self.folder_id,
+            trashed=self.trashed, starred=self.starred,
+            tags=self.tags,
+        )
 
 
 class Folder(object):
@@ -132,6 +146,26 @@ class Folder(object):
 
     def __str__(self):
         return "Folder: %(folder_id)s - %(folder_name)s" % self.__dict__
+
+    def save(self):
+        if self.folder_id is None:
+            response = self.api.request('%s/folders' % self.api._UPLOAD_BASE_URL,
+                                        json={
+                                            "starred": self.starred,
+                                            "parent_folder_id": self.parent_folder_id,
+                                            "folder_name": self.folder_name,
+                                            "trashed": self.trashed,
+                                        },
+                                        method='post')
+            folder_metadata = response.json()
+            self.folder_id = folder_metadata['folder_id']
+        else:
+            # saving an existing folder is like setting the metadata
+            self.set_metadata(
+                folder_name=self.folder_name,
+                parent_folder_id=self.parent_folder_id,
+                trashed=self.trashed, starred=self.starred
+            )
 
     @api_method
     def delete(self):

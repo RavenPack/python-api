@@ -1,3 +1,4 @@
+import mimetypes
 import os
 
 from ravenpackapi.upload.models import (File, FILE_FIELDS,
@@ -15,6 +16,7 @@ class UploadApi(object):
              tags=None,
              status=None,
              file_name=None,
+             folder_id=None,
              page_size=50,
              ):
         params = dict(
@@ -23,6 +25,8 @@ class UploadApi(object):
             tags=tags,
             status=status,
             file_name=file_name,
+            folder_id=folder_id,
+            page_size=page_size,
         )
 
         # the list of files is splitted in pages - let's collect them
@@ -49,8 +53,10 @@ class UploadApi(object):
             offset += page_size
             params['offset'] = offset
 
-    def file(self, name_or_file_handler, properties=None):
-        """ Upload a file - file can be either a filename or a file handler """
+    def file(self, name_or_file_handler,
+             folder=None,
+             properties=None):
+        """ Upload a file - file can be either a file name or a file handler """
         close_file = False
         if isinstance(name_or_file_handler, str):
             filepath = name_or_file_handler
@@ -60,10 +66,16 @@ class UploadApi(object):
             filepath = name_or_file_handler.name
             fh = name_or_file_handler
         file_name = os.path.basename(filepath)
+        content_type = mimetypes.guess_type(file_name)[0]
+        if isinstance(folder, Folder):
+            folder_id = folder.folder_id
+        else:
+            folder_id = folder
 
         params = dict(
-            filename=file_name,
-            properties=properties
+            file_name=file_name,
+            properties=properties,
+            folder_id=folder_id,
         )
 
         first_response = self.api.request(
@@ -84,6 +96,7 @@ class UploadApi(object):
             data=fh,
             headers={
                 "x-amz-server-side-encryption": "AES256",
+                "Content-Type": content_type,
             }
         )
 
@@ -99,7 +112,7 @@ class UploadApi(object):
     def list_folders(self):
         response = self.api.request('%s/folders' % self.api._UPLOAD_BASE_URL)
         data = response.json()
-        for r in data:
+        for r in data['results']:
             folder_params = {
                 field: r.get(field) for field in FOLDER_FIELDS
             }
@@ -107,3 +120,12 @@ class UploadApi(object):
 
     def folder_get(self, folder_id):
         return Folder(folder_id, api=self.api)
+
+    def folder_create(self, folder_name, parent_folder_id=None, starred=False, trashed=False):
+        folder = Folder(folder_id=None,
+                        folder_name=folder_name,
+                        parent_folder_id=parent_folder_id,
+                        starred=starred, trashed=trashed,
+                        api=self.api)
+        folder.save()
+        return folder

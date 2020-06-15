@@ -30,3 +30,12 @@ f.save_original("_orig.doc")
 
 # ... or delete it
 # f.delete()
+
+# we can also work with folders
+folder = api.upload.folder_create('documents')
+print(folder)
+folder.folder_name = "papers"
+folder.save()
+
+# upload a file into a folder:
+f = api.upload.file("_orig.doc", folder=folder)
