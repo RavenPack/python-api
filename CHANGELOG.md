@@ -1,5 +1,9 @@
 # Changelog
 
+
+## v1.0.38 (2020-09-04)
+* Text-Analytics API additional functions: `get_analytics` and `get_annotated`
+
 ## v1.0.36 (2020-05-14)
 * Text-Analytics API endpoint updated: folders & richer metadata
 * Extended error handling to support Feed disconnection problems

@@ -1,9 +1,14 @@
+import logging
 import mimetypes
 import os
+from time import sleep
 
+from ravenpackapi.exceptions import APIException
 from ravenpackapi.upload.models import (File, FILE_FIELDS,
                                         Folder, FOLDER_FIELDS)
 from ravenpackapi.utils.date_formats import as_datetime_str
+
+logger = logging.getLogger("ravenpack.upload")
 
 
 class UploadApi(object):
@@ -90,15 +95,27 @@ class UploadApi(object):
         file_id = promise['file_id']
         location = promise['Location']
 
-        self.api.request(
-            endpoint=location,
-            method='put',
-            data=fh,
-            headers={
-                "x-amz-server-side-encryption": "AES256",
-                "Content-Type": content_type,
-            }
-        )
+        attempt = 3
+        while attempt:
+            try:
+                fh.seek(0)
+                self.api.request(
+                    endpoint=location,
+                    method='put',
+                    data=fh,
+                    headers={
+                        "x-amz-server-side-encryption": "AES256",
+                        "Content-Type": content_type,
+                    }
+                )
+            except APIException as e:
+                attempt -= 1
+                if attempt == 0:
+                    raise e  # raise the exception
+                logger.warning("Error with PUT file operation - retring")
+                sleep(1)
+            else:
+                break
 
         if close_file:  # we opened the handler, so let's close it
             fh.close()
