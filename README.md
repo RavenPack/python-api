@@ -33,6 +33,8 @@ api = RPApi(api_key="YOUR_API_KEY")
 To create a dataset you can call the `create_dataset` method of the API with a Dataset instance.
 
 ```python
+from ravenpackapi import Dataset
+
 ds = api.create_dataset(
     Dataset(
         name="New Dataset",
