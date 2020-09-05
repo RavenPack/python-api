@@ -45,7 +45,7 @@ class TestEntityMapping(object):
         assert [m.name for m in mapping.matched] == [
             "RavenPack International S.L.",
             "Apple Inc.",
-            "State of California, CA, US",
+            "State of California, US",
             "Amazon.com Inc."
         ]
         assert len(mapping.errors) == 1
