@@ -14,16 +14,18 @@ data = ds.json(
     end_date='2019-08-05 18:01:00',
 )
 
+last_rp_story_id = None
 for record in list(data)[:5]:  # get url of the first documents
     rp_story_id = record['rp_story_id']
-
-    try:
-        url = api.get_document_url(rp_story_id)
-    except APIException as e:
-        if e.response.status_code == 404:  # when the document is found, handle it gracefully
-            url = None
-        else:
-            raise
+    if last_rp_story_id is None or last_rp_story_id != rp_story_id:
+        try:
+            url = api.get_document_url(rp_story_id)
+        except APIException as e:
+            if e.response.status_code == 404:  # when the document is found, handle it gracefully
+                url = None
+            else:
+                raise
+        last_rp_story_id = rp_story_id
     print(rp_story_id,
           record['headline'],
           url,

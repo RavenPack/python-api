@@ -47,6 +47,8 @@ API with a Dataset instance.
 
 .. code:: python
 
+    from ravenpackapi import Dataset
+
     ds = api.create_dataset(
         Dataset(
             name="New Dataset",
