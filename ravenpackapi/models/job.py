@@ -2,8 +2,6 @@ import datetime
 import logging
 from time import sleep
 
-import requests
-
 from ravenpackapi.exceptions import (api_method,
                                      APIException,
                                      DataFileTimeout,
@@ -112,11 +110,11 @@ class Job(object):
 
             # this is a different request than the normal API
             # streaming the file in chunks
-            response = requests.get(job.url,
-                                    headers=api.headers,
-                                    stream=True,
-                                    **api.common_request_params
-                                    )
+            response = api.session.get(job.url,
+                                       headers=api.headers,
+                                       stream=True,
+                                       **api.common_request_params
+                                       )
             if response.status_code != 200:
                 logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
                 raise APIException(
@@ -133,22 +131,21 @@ class Job(object):
         job = self  # just to be clear
         job.wait_for_completion()
 
-        with requests.Session() as s:
-            r = s.get(job.url,
-                      headers=api.headers,
-                      stream=True,
-                      **api.common_request_params
-                      )
-            iterator = r.iter_lines(chunk_size=self._CHUNK_SIZE)
+        r = api.session.get(job.url,
+                            headers=api.headers,
+                            stream=True,
+                            **api.common_request_params
+                            )
+        iterator = r.iter_lines(chunk_size=self._CHUNK_SIZE)
 
-            headers = next(iterator)  # discard the headers
+        headers = next(iterator)  # discard the headers
 
-            if include_headers:
-                yield parse_csv_line(headers)
+        if include_headers:
+            yield parse_csv_line(headers)
 
-            for line in iterator:
-                fields = parse_csv_line(line)
-                yield fields
+        for line in iterator:
+            fields = parse_csv_line(line)
+            yield fields
 
     def __iter__(self):
         # this will be yield from in Py3

@@ -1,8 +1,6 @@
 import logging
 import os
 
-import requests
-
 from ravenpackapi import Dataset
 from ravenpackapi.exceptions import APIException
 from ravenpackapi.models.dataset_list import DatasetList
@@ -13,9 +11,10 @@ from ravenpackapi.upload.module import UploadApi
 from ravenpackapi.util import to_curl
 from ravenpackapi.utils.constants import ENTITY_TYPES
 from ravenpackapi.utils.date_formats import as_datetime_str
+from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.38'
+VERSION = '1.0.39'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -45,6 +44,7 @@ class RPApi(object):
             )
         self.api_key = api_key
         self.log_curl_commands = True
+        self.session = DynamicSession()
         self.upload = UploadApi(self)
 
     @property
@@ -62,7 +62,7 @@ class RPApi(object):
             'Method {used} not accepted. Please choose one of {valid_methods}'.format(
                 used=method, valid_methods=", ".join(_VALID_METHODS)
             )
-        requests_call = getattr(requests, method)
+        requests_call = getattr(self.session, method)
         logger.debug("Request {method} to {endpoint}".format(method=method,
                                                              endpoint=endpoint))
         if endpoint.startswith("http://") or endpoint.startswith("https://"):

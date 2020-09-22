@@ -37,15 +37,15 @@ class TestJobCancellation(object):
             job.cancel()
         except APIException as exception:
             # cancel raised an exception, means that we were already processing it
-            assert status == 'processing'
-            assert exception.response.status_code == 400
-        else:
-            assert status == 'enqueued'
-            assert job.get_status() == 'cancelled'
+            if status == 'processing':
+                assert exception.response.status_code == 400
+            else:
+                assert status == 'enqueued'
+                assert job.get_status() == 'cancelled'
 
-            assert job.is_processing is False
-            with pytest.raises(JobNotProcessing):
-                job.wait_for_completion()
+                assert job.is_processing is False
+                with pytest.raises(JobNotProcessing):
+                    job.wait_for_completion()
 
     @classmethod
     def teardown_class(cls):

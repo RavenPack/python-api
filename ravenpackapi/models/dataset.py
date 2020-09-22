@@ -298,11 +298,11 @@ class Dataset(object):
                                                            dataset_id=self.id)
         logger.debug("Connecting with RT feed: %s" % endpoint)
         try:
-            response = requests.get(endpoint,
-                                    headers=api.headers,
-                                    stream=True,
-                                    **api.common_request_params
-                                    )
+            response = api.session.get(endpoint,
+                                       headers=api.headers,
+                                       stream=True,
+                                       **api.common_request_params
+                                       )
             if response.status_code != 200:
                 logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
                 raise APIException(

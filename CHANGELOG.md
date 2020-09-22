@@ -1,5 +1,7 @@
 # Changelog
 
+## v1.0.39 (2020-09-22)
+* Persistent sessions between API-calls
 
 ## v1.0.38 (2020-09-04)
 * Text-Analytics API additional functions: `get_analytics` and `get_annotated`
