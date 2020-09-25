@@ -146,3 +146,7 @@ class UploadApi(object):
                         api=self.api)
         folder.save()
         return folder
+
+    def quota(self):
+        response = self.api.request('%s/quota' % self.api._UPLOAD_BASE_URL)
+        return response.json()
