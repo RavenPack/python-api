@@ -4,6 +4,7 @@ import os
 from ravenpackapi import Dataset
 from ravenpackapi.exceptions import APIException
 from ravenpackapi.models.dataset_list import DatasetList
+from ravenpackapi.models.job import Job
 from ravenpackapi.models.mapping import RPMappingResults
 from ravenpackapi.models.reference import RpEntityReference, EntityTypeReference
 from ravenpackapi.models.results import Results
@@ -104,6 +105,14 @@ class RPApi(object):
             map(lambda item: Dataset.from_dict(item, api=self),
                 response.json()['datasets'])
         )
+
+    def list_jobs(self, start_date, end_date, status=None):
+        response = self.request('/jobs', params={
+            "start_date": as_datetime_str(start_date),
+            "end_date": as_datetime_str(end_date),
+            "status": status
+        })
+        return [Job(self, job) for job in response.json()['jobs']]
 
     def create_dataset(self, dataset):
         # be sure to create a copy

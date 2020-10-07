@@ -35,3 +35,15 @@ class TestDatafile(object):
             records.append(record)
         assert len(records) > 1
         assert records[0] == ['RP_STORY_ID', 'TIMESTAMP_UTC']  # we want the headers
+
+    def test_job_list_in_error(self):
+        start_date = '2018-01-01',
+        end_date = '2018-02-01 00:00:00',
+        jobs = self.api.list_jobs(start_date, end_date)
+        assert isinstance(jobs, list)
+
+    def test_job_list_completed(self):
+        start_date = '2018-01-01',
+        end_date = '2018-02-01 00:00:00',
+        jobs = self.api.list_jobs(start_date, end_date, status=['COMPLETED'])
+        assert isinstance(jobs, list)

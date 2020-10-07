@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.40 (2020-10-07)
+* Support for the /jobs endpoint (to list the user past endpoints)
+
 ## v1.0.39 (2020-09-22)
 * Persistent sessions between API-calls
 
