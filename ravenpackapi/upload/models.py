@@ -45,8 +45,7 @@ class File(object):
 
     @api_method
     def get_status(self):
-        response = self.api.request('%s/files/%s/status' % (self.api._UPLOAD_BASE_URL, self.file_id))
-        self.status = response.json()['status']
+        self.get_metadata(force_refresh=True)
         return self.status
 
     @api_method
