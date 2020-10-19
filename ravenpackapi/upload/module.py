@@ -42,17 +42,16 @@ class UploadApi(object):
                                                 for k, v in params.items()
                                                 if v is not None})
             data = response.json()
-            if 'results' in data:
-                results = data['results']
-                for r in results:
-                    get_next = len(results) == page_size
-                    file_params = {
-                        field: r.get(field) for field in FILE_FIELDS
-                    }
-                    yield File(
-                        api=self.api,
-                        **file_params
-                    )
+            results = data.get('results') or []
+            get_next = len(results) == page_size
+            for r in results:
+                file_params = {
+                    field: r.get(field) for field in FILE_FIELDS
+                }
+                yield File(
+                    api=self.api,
+                    **file_params
+                )
             if not get_next:
                 break
             offset += page_size
