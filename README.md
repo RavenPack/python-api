@@ -2,7 +2,7 @@
 
 A Python library to consume the [RavenPack](https://www.ravenpack.com) API.
 
-[API documention.](https://www.ravenpack.com/support/)
+[API documentation.](https://www.ravenpack.com/support/)
 
 ## Installation
 
@@ -10,13 +10,13 @@ A Python library to consume the [RavenPack](https://www.ravenpack.com) API.
 
 ## About
 
-The Python client helps managing the API calls to the RavenPack dataset server
- in a Pythonic way, here are some examples of usage, you can find more in the tests.
+The Python client helps managing the API calls to the RavenPack dataset server in a Pythonic way, here are some examples
+of usage, you can find more in the tests.
 
 ## Usage
 
-In order to be able to use the RavenPack API you will need an API KEY.
-If you don't already have one please contact your [customer support](mailto:sales@ravenpack.com) representative.
+In order to be able to use the RavenPack API you will need an API KEY. If you don't already have one please contact
+your [customer support](mailto:sales@ravenpack.com) representative.
 
 To begin using the API you will need to instantiate an API object that will deal with the API calls.
 
@@ -60,9 +60,11 @@ Here is how you may get a dataset definition for a pre-existing dataset
 
 ds = api.get_dataset(dataset_id='us30')
 ```
+
 #### Downloads: json
 
-The json endpoint is useful for asking data synchronously, optimized for small requests, if you need to download big data chunks you may want to use the asynchronous datafile endpoint instead.
+The json endpoint is useful for asking data synchronously, optimized for small requests, if you need to download big
+data chunks you may want to use the asynchronous datafile endpoint instead.
 
 ```python
 data = ds.json(
@@ -75,12 +77,14 @@ for record in data:
 ```
 
 Json queries are limited to
+
 * granular datasets: 10,000 records
 * indicator datasets: 500 entities, timerange 1 year, lookback window 1 year
 
 #### Downloads: datafile
 
-For bigger requests the datafile endpoint can be used to prepare a datafile asynchronously on the RavenPack server for later retrieval.
+For bigger requests the datafile endpoint can be used to prepare a datafile asynchronously on the RavenPack server for
+later retrieval.
 
 Requesting a datafile, will give you back a job object, that will take some time to complete.
 
@@ -91,22 +95,21 @@ job = ds.request_datafile(
 )
 
 with open('output.csv') as fp:
-	job.save_to_file(filename=fp.name)
+    job.save_to_file(filename=fp.name)
 ```
 
 ### Streaming real-time data
 
 It is possible to subscribe to a real-time stream for a dataset.
 
-Once you create a streaming connection to the real-time feed with your dataset,
-you will receive analytics records as soon as they are published.
+Once you create a streaming connection to the real-time feed with your dataset, you will receive analytics records as
+soon as they are published.
 
+It is suggested to handle possible disconnection with a retry policy. You can find
+a [real-time streaming example here](ravenpackapi/examples/get_realtime_news.py).
 
-It is suggested to handle possible disconnection with a retry policy.
-You can find a [real-time streaming example here](ravenpackapi/examples/get_realtime_news.py).
-
-The Result object handles the conversion of various fields into the appropriate type, 
-i.e. `record.timestamp_utc` will be converted to `datetime`
+The Result object handles the conversion of various fields into the appropriate type, i.e. `record.timestamp_utc` will
+be converted to `datetime`
 
 ### Entity mapping
 
@@ -114,30 +117,30 @@ The entity mapping endpoint allow you to find the RP_ENTITY_ID mapped to your un
 
 ```python
 universe = [
-	"RavenPack",
-	{'ticker': 'AAPL'},
-	'California USA',
-	{  # Amazon, specifying various fields
-		"client_id": "12345-A",
-		"date": "2017-01-01",
-		"name": "Amazon Inc.",
-		"entity_type": "COMP",
-		"isin": "US0231351067",
-		"cusip": "023135106",
-		"sedol": "B58WM62",
-		"listing": "XNAS:AMZN"
-	},
-	
+    "RavenPack",
+    {'ticker': 'AAPL'},
+    'California USA',
+    {  # Amazon, specifying various fields
+        "client_id": "12345-A",
+        "date": "2017-01-01",
+        "name": "Amazon Inc.",
+        "entity_type": "COMP",
+        "isin": "US0231351067",
+        "cusip": "023135106",
+        "sedol": "B58WM62",
+        "listing": "XNAS:AMZN"
+    },
+
 ]
 mapping = api.get_entity_mapping(universe)
 
 # in this case we match everything
 assert len(mapping.matched) == len(universe)
 assert [m.name for m in mapping.matched] == [
-	"RavenPack International S.L.",
-	"Apple Inc.",
-	"California, U.S.",
-	"Amazon.com Inc."
+    "RavenPack International S.L.",
+    "Apple Inc.",
+    "California, U.S.",
+    "Amazon.com Inc."
 ]
 ```
 
@@ -153,7 +156,7 @@ references = api.get_entity_reference(ALPHABET_RP_ENTITY_ID)
 # show all the names over history
 for name in references.names:
     print(name.value, name.start, name.end)
-    
+
 # print all the ticket valid today
 for ticker in references.tickers:
     if ticker.is_valid():
@@ -164,24 +167,23 @@ for ticker in references.tickers:
 
 Analyse your own content using RavenPack’s proprietary NLP technology.
 
-The API for analyzing your internal content is still in beta and may change in the future.
-You can request an early access and [see an example of usage here](ravenpackapi/examples/text_extraction.py).
-
+The API for analyzing your internal content is still in beta and may change in the future. You can request an early
+access and [see an example of usage here](ravenpackapi/examples/text_extraction.py).
 
 ### Accessing the low-level requests
 
-RavenPack API wrapper is using the [requests library](https://2.python-requests.org) to do HTTPS requests,
-you can set common requests parameters to all the outbound calls by setting the `common_request_params` attribute.
+RavenPack API wrapper is using the [requests library](https://2.python-requests.org) to do HTTPS requests, you can set
+common requests parameters to all the outbound calls by setting the `common_request_params` attribute.
 
 For example, to disable HTTPS certificate verification and to setup your internal proxy:
 
 ```python
 api = RPApi()
 api.common_request_params.update(
-	dict(
-		proxies={'https': 'http://your_internal_proxy:9999'},
-		verify=False,
-	)
+    dict(
+        proxies={'https': 'http://your_internal_proxy:9999'},
+        verify=False,
+    )
 )
 
 # use the api to do requests

@@ -4,7 +4,7 @@ RavenPack API - Python client
 A Python library to consume the
 `RavenPack <https://www.ravenpack.com>`__ API.
 
-`API documention. <https://www.ravenpack.com/support/>`__
+`API documentation. <https://www.ravenpack.com/support/>`__
 
 Installation
 ------------
@@ -93,9 +93,11 @@ use the asynchronous datafile endpoint instead.
    for record in data:
        print(record)
 
-Json queries are limited to \* granular datasets: 10,000 records \*
-indicator datasets: 500 entities, timerange 1 year, lookback window 1
-year
+Json queries are limited to
+
+-  granular datasets: 10,000 records
+-  indicator datasets: 500 entities, timerange 1 year, lookback window 1
+   year
 
 Downloads: datafile
 ^^^^^^^^^^^^^^^^^^^
@@ -155,7 +157,7 @@ your universe of entities.
            "sedol": "B58WM62",
            "listing": "XNAS:AMZN"
        },
-       
+
    ]
    mapping = api.get_entity_mapping(universe)
 
@@ -183,7 +185,7 @@ an Entity given the RP_ENTITY_ID
    # show all the names over history
    for name in references.names:
        print(name.value, name.start, name.end)
-       
+
    # print all the ticket valid today
    for ticker in references.tickers:
        if ticker.is_valid():
