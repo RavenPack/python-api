@@ -11,7 +11,7 @@ Installation
 
 ::
 
-    pip install ravenpackapi
+   pip install ravenpackapi
 
 About
 -----
@@ -24,7 +24,7 @@ Usage
 -----
 
 In order to be able to use the RavenPack API you will need an API KEY.
-If you don't already have one please contact your `customer
+If you don’t already have one please contact your `customer
 support <mailto:sales@ravenpack.com>`__ representative.
 
 To begin using the API you will need to instantiate an API object that
@@ -35,9 +35,9 @@ environment variable or set it in your code:
 
 .. code:: python
 
-    from ravenpackapi import RPApi
+   from ravenpackapi import RPApi
 
-    api = RPApi(api_key="YOUR_API_KEY")
+   api = RPApi(api_key="YOUR_API_KEY")
 
 Creating a new dataset
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -47,19 +47,19 @@ API with a Dataset instance.
 
 .. code:: python
 
-    from ravenpackapi import Dataset
+   from ravenpackapi import Dataset
 
-    ds = api.create_dataset(
-        Dataset(
-            name="New Dataset",
-            filters={
-                "relevance": {
-                    "$gte": 90
-                }
-            },
-        )
-    )
-    print("Dataset created", ds)
+   ds = api.create_dataset(
+       Dataset(
+           name="New Dataset",
+           filters={
+               "relevance": {
+                   "$gte": 90
+               }
+           },
+       )
+   )
+   print("Dataset created", ds)
 
 Getting data from the datasets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -71,10 +71,10 @@ Here is how you may get a dataset definition for a pre-existing dataset
 
 .. code:: python
 
-    # Get the dataset description from the server, here we use 'us30'
-    # one of RavenPack public datasets with the top30 companies in the US  
+   # Get the dataset description from the server, here we use 'us30'
+   # one of RavenPack public datasets with the top30 companies in the US  
 
-    ds = api.get_dataset(dataset_id='us30')
+   ds = api.get_dataset(dataset_id='us30')
 
 Downloads: json
 ^^^^^^^^^^^^^^^
@@ -85,13 +85,13 @@ use the asynchronous datafile endpoint instead.
 
 .. code:: python
 
-    data = ds.json(
-        start_date='2018-01-05 18:00:00',
-        end_date='2018-01-05 18:01:00',
-    )
+   data = ds.json(
+       start_date='2018-01-05 18:00:00',
+       end_date='2018-01-05 18:01:00',
+   )
 
-    for record in data:
-        print(record)
+   for record in data:
+       print(record)
 
 Json queries are limited to \* granular datasets: 10,000 records \*
 indicator datasets: 500 entities, timerange 1 year, lookback window 1
@@ -108,13 +108,13 @@ some time to complete.
 
 .. code:: python
 
-    job = ds.request_datafile(
-        start_date='2018-01-05 18:00:00',
-        end_date='2018-01-05 18:01:00',
-    )
+   job = ds.request_datafile(
+       start_date='2018-01-05 18:00:00',
+       end_date='2018-01-05 18:01:00',
+   )
 
-    with open('output.csv') as fp:
-        job.save_to_file(filename=fp.name)
+   with open('output.csv') as fp:
+       job.save_to_file(filename=fp.name)
 
 Streaming real-time data
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -130,64 +130,64 @@ You can find a `real-time streaming example
 here <ravenpackapi/examples/get_realtime_news.py>`__.
 
 The Result object handles the conversion of various fields into the
-appropriate type, i.e. ``record.timestamp_utc`` will be converted to
+appropriate type, i.e. \ ``record.timestamp_utc`` will be converted to
 ``datetime``
 
 Entity mapping
 ~~~~~~~~~~~~~~
 
-The entity mapping endpoint allow you to find the RP\_ENTITY\_ID mapped
-to your universe of entities.
+The entity mapping endpoint allow you to find the RP_ENTITY_ID mapped to
+your universe of entities.
 
 .. code:: python
 
-    universe = [
-        "RavenPack",
-        {'ticker': 'AAPL'},
-        'California USA',
-        {  # Amazon, specifying various fields
-            "client_id": "12345-A",
-            "date": "2017-01-01",
-            "name": "Amazon Inc.",
-            "entity_type": "COMP",
-            "isin": "US0231351067",
-            "cusip": "023135106",
-            "sedol": "B58WM62",
-            "listing": "XNAS:AMZN"
-        },
-        
-    ]
-    mapping = api.get_entity_mapping(universe)
+   universe = [
+       "RavenPack",
+       {'ticker': 'AAPL'},
+       'California USA',
+       {  # Amazon, specifying various fields
+           "client_id": "12345-A",
+           "date": "2017-01-01",
+           "name": "Amazon Inc.",
+           "entity_type": "COMP",
+           "isin": "US0231351067",
+           "cusip": "023135106",
+           "sedol": "B58WM62",
+           "listing": "XNAS:AMZN"
+       },
+       
+   ]
+   mapping = api.get_entity_mapping(universe)
 
-    # in this case we match everything
-    assert len(mapping.matched) == len(universe)
-    assert [m.name for m in mapping.matched] == [
-        "RavenPack International S.L.",
-        "Apple Inc.",
-        "California, U.S.",
-        "Amazon.com Inc."
-    ]
+   # in this case we match everything
+   assert len(mapping.matched) == len(universe)
+   assert [m.name for m in mapping.matched] == [
+       "RavenPack International S.L.",
+       "Apple Inc.",
+       "California, U.S.",
+       "Amazon.com Inc."
+   ]
 
 Entity reference
 ~~~~~~~~~~~~~~~~
 
 The entity reference endpoint give you all the available information for
-an Entity given the RP\_ENTITY\_ID
+an Entity given the RP_ENTITY_ID
 
 .. code:: python
 
-    ALPHABET_RP_ENTITY_ID = '4A6F00'
+   ALPHABET_RP_ENTITY_ID = '4A6F00'
 
-    references = api.get_entity_reference(ALPHABET_RP_ENTITY_ID)
+   references = api.get_entity_reference(ALPHABET_RP_ENTITY_ID)
 
-    # show all the names over history
-    for name in references.names:
-        print(name.value, name.start, name.end)
-        
-    # print all the ticket valid today
-    for ticker in references.tickers:
-        if ticker.is_valid():
-            print(ticker)
+   # show all the names over history
+   for name in references.names:
+       print(name.value, name.start, name.end)
+       
+   # print all the ticket valid today
+   for ticker in references.tickers:
+       if ticker.is_valid():
+           print(ticker)
 
 Text Analytics
 ~~~~~~~~~~~~~~
@@ -211,15 +211,15 @@ internal proxy:
 
 .. code:: python
 
-    api = RPApi()
-    api.common_request_params.update(
-        dict(
-            proxies={'https': 'http://your_internal_proxy:9999'},
-            verify=False,
-        )
-    )
+   api = RPApi()
+   api.common_request_params.update(
+       dict(
+           proxies={'https': 'http://your_internal_proxy:9999'},
+           verify=False,
+       )
+   )
 
-    # use the api to do requests
+   # use the api to do requests
 
 PS. For setting your internal proxies, requests will honor the
-HTTPS\_PROXY environment variable.
+HTTPS_PROXY environment variable.

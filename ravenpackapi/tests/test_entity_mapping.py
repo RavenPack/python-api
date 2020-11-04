@@ -59,3 +59,20 @@ class TestEntityMapping(object):
         mapping = api.get_entity_mapping(entities)
         assert not mapping.errors
         assert len(mapping.matched) == len(mapping.submitted) == 3
+
+    def test_multiple_candidates(self):
+        entities = [
+            {'isin': 'US88339J1051', 'name': 'TRADE DESK INC/THE -CLASS A'},
+        ]
+        api = self.api
+        mapping = api.get_entity_mapping(entities)
+        assert len(mapping.errors) == 1
+        assert len(mapping.matched) == 0
+
+        for close_match in mapping.errors:
+            if close_match.candidates:
+                best_match = close_match.candidates[0]
+                assert best_match.id == '0E698B'
+                assert best_match.name == 'The Trade Desk Inc.'
+                assert best_match.type == 'comp'
+            assert close_match.request == entities[0]

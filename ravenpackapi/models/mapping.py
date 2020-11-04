@@ -16,10 +16,23 @@ class RPMappingMatch(object):
     def __init__(self, data):
         self.request = data['request_data']
         self.errors = data['errors']
+        self.candidates = [
+            RPMappingCandidate(candidate)
+            for candidate in data.get('rp_entities', [])
+        ]
+
         if not self.errors:
-            self.candidates = data['rp_entities']
             # let's put the best candidate data on the obj for convenience
             best_match = self.candidates[0]
-            self.id = best_match['rp_entity_id']
-            self.name = best_match['rp_entity_name']
-            self.type = best_match['rp_entity_type']
+            self.id = best_match.id
+            self.name = best_match.name
+            self.type = best_match.type
+            self.score = best_match.score
+
+
+class RPMappingCandidate(object):
+    def __init__(self, data):
+        self.id = data['rp_entity_id']
+        self.name = data['rp_entity_name']
+        self.type = data['rp_entity_type']
+        self.score = data['score']
