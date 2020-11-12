@@ -38,7 +38,7 @@ class Dataset(object):
         if 'id' in kwargs:
             if uuid:
                 raise Exception("Please provide or the id or the uuid, not both: they are aliases")
-            uuid = kwargs['id']
+            uuid = kwargs.pop('id')
 
         self.api = api
         self.product_version = product_version
@@ -58,8 +58,11 @@ class Dataset(object):
 
         self.tags = tags
 
-        self.creation_time = kwargs.get('creation_time')
-        self.last_modified = kwargs.get('last_modified')
+        self.creation_time = kwargs.pop('creation_time', None)
+        self.last_modified = kwargs.pop('last_modified', None)
+
+        if kwargs:
+            raise ValueError("Invalid fields for the dataset: %s" % ", ".join(kwargs.keys()))
 
         # the dataset can be initialized with just the uuid and the name
         # in that case we'll ask the server for the missing info

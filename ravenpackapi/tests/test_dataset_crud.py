@@ -47,3 +47,21 @@ class TestDatasetCRUD(object):
 
         owned_dataset = self.api.list_datasets()
         assert new_dataset.id not in owned_dataset, "The new dataset should be deleted"
+
+
+class TestDatasetCreation(object):
+
+    def test_valid_additional_fields(self):
+        dt = '2020-01-01'
+        d = Dataset(id='us30', creation_time=dt, last_modified=dt)
+        assert d.id == 'us30'
+        assert d.creation_time == d.last_modified == dt
+
+    def test_valid_uuid(self):
+        d = Dataset(uuid='us30')
+        assert d.id == 'us30'
+
+    def test_invalid_additional_fields(self):
+        dt = '2020-01-01'
+        with pytest.raises(ValueError):
+            Dataset(id='us30', creation_time=dt, last_modified=dt, invalid_field=1)
