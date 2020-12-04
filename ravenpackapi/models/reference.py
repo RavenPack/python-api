@@ -62,10 +62,11 @@ _MAPPED_FIELDS.update(  # all regular plurals
 
 
 class RpEntityReference(object):
-    def __init__(self, rp_entity_id, data):
+    def __init__(self, rp_entity_id, data, entity_type=None):
         super(RpEntityReference, self).__init__()
         self.rp_entity_id = rp_entity_id
         self._data = data
+        self.type = entity_type
 
     def __getattr__(self, field):
         data_field = _MAPPED_FIELDS.get(field)
@@ -132,7 +133,8 @@ class EntityTypeReference(object):
             parsed_line = parse_csv_line(line)
             rp_entity_id, entity_type, data_type, data_value, range_start, range_end = parsed_line
             if rp_entity_id not in self._entities:
-                self._entities[rp_entity_id] = entity = RpEntityReference(rp_entity_id, {})
+                self._entities[rp_entity_id] = entity = RpEntityReference(rp_entity_id, {},
+                                                                          entity_type=entity_type)
             else:
                 entity = self._entities[rp_entity_id]
             data_type = data_type.lower()
