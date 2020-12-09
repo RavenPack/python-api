@@ -1,6 +1,7 @@
 from time import sleep
 
 from ravenpackapi.exceptions import api_method
+from ravenpackapi.upload.upload_utils import retry_404
 
 FILE_FIELDS = (
     'file_id', 'file_name', 'folder_id',
@@ -64,8 +65,9 @@ class File(object):
 
     @api_method
     def save_original(self, filename):
-        response = self.api.request('%s/files/%s' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                    stream=True)
+        response = retry_404(self.api.request,
+                             '%s/files/%s' % (self.api._UPLOAD_BASE_URL, self.file_id),
+                             stream=True)
         with open(filename, 'wb') as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
@@ -73,12 +75,13 @@ class File(object):
     @api_method
     def save_analytics(self, filename, output_format='application/json'):
         self.wait_for_completion()
-        response = self.api.request('%s/files/%s/analytics' % (self.api._UPLOAD_BASE_URL, self.file_id,),
-                                    headers=dict(
-                                        Accept=output_format,
-                                        **self.api.headers
-                                    ),
-                                    stream=True)
+        response = retry_404(self.api.request,
+                             '%s/files/%s/analytics' % (self.api._UPLOAD_BASE_URL, self.file_id,),
+                             headers=dict(
+                                 Accept=output_format,
+                                 **self.api.headers
+                             ),
+                             stream=True)
         with open(filename, 'wb') as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
@@ -86,11 +89,12 @@ class File(object):
     @api_method
     def get_analytics(self, output_format='application/json'):
         self.wait_for_completion()
-        response = self.api.request('%s/files/%s/analytics' % (self.api._UPLOAD_BASE_URL, self.file_id,),
-                                    headers=dict(
-                                        Accept=output_format,
-                                        **self.api.headers
-                                    ))
+        response = retry_404(self.api.request,
+                             '%s/files/%s/analytics' % (self.api._UPLOAD_BASE_URL, self.file_id,),
+                             headers=dict(
+                                 Accept=output_format,
+                                 **self.api.headers
+                             ))
         if output_format == 'application/json':
             return response.json()
         else:
@@ -99,8 +103,9 @@ class File(object):
     @api_method
     def save_annotated(self, filename):
         self.wait_for_completion()
-        response = self.api.request('%s/files/%s/annotated' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                    stream=True)
+        response = retry_404(self.api.request,
+                             '%s/files/%s/annotated' % (self.api._UPLOAD_BASE_URL, self.file_id),
+                             stream=True)
         with open(filename, 'wb') as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
@@ -108,13 +113,17 @@ class File(object):
     @api_method
     def get_annotated(self):
         self.wait_for_completion()
-        response = self.api.request('%s/files/%s/annotated' % (self.api._UPLOAD_BASE_URL, self.file_id))
+        response = retry_404(self.api.request,
+                             '%s/files/%s/annotated' % (self.api._UPLOAD_BASE_URL, self.file_id)
+                             )
         return response.text
 
     @api_method
     def delete(self):
-        response = self.api.request('%s/files/%s' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                    method='delete')
+        response = retry_404(self.api.request,
+                             '%s/files/%s' % (self.api._UPLOAD_BASE_URL, self.file_id),
+                             method='delete'
+                             )
         return response
 
     @api_method

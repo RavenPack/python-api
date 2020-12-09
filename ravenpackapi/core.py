@@ -2,7 +2,7 @@ import logging
 import os
 
 from ravenpackapi import Dataset
-from ravenpackapi.exceptions import APIException
+from ravenpackapi.exceptions import get_exception
 from ravenpackapi.models.dataset_list import DatasetList
 from ravenpackapi.models.job import Job
 from ravenpackapi.models.mapping import RPMappingResults
@@ -15,7 +15,7 @@ from ravenpackapi.utils.date_formats import as_datetime_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.43'
+VERSION = '1.0.44'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -88,11 +88,7 @@ class RPApi(object):
             logger.info("API query to %s" % to_curl(response.request))
         if except_on_fail and response.status_code != 200:
             logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
-            raise APIException(
-                'Got an error {status}: body was \'{error_message}\''.format(
-                    status=response.status_code,
-                    error_message=response.text
-                ), response=response)
+            raise get_exception(response)
         return response
 
     def list_datasets(self, scope=None, tags=None):

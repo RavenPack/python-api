@@ -3,11 +3,29 @@ from functools import wraps
 import requests
 
 
+def get_exception(response):
+    """ Return an appropriate APIException given an API response """
+    if response.status_code == 404:
+        Exception_class = APIException404
+    else:
+        Exception_class = APIException
+
+    return Exception_class(
+        'Got an error {status}: body was \'{error_message}\''.format(
+            status=response.status_code,
+            error_message=response.text
+        ), response=response)
+
+
 class APIException(Exception):
     def __init__(self, *args, **kwargs):
         response = kwargs.pop('response', None)
         super(APIException, self).__init__(*args)
         self.response = response
+
+
+class APIException404(APIException):
+    pass
 
 
 class MissingAPIException(Exception):
