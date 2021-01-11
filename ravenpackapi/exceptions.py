@@ -7,6 +7,8 @@ def get_exception(response):
     """ Return an appropriate APIException given an API response """
     if response.status_code == 404:
         Exception_class = APIException404
+    elif response.status_code == 425:
+        Exception_class = APIException425
     else:
         Exception_class = APIException
 
@@ -25,6 +27,11 @@ class APIException(Exception):
 
 
 class APIException404(APIException):
+    pass
+
+
+class APIException425(APIException):
+    """ Request arrived too early """
     pass
 
 

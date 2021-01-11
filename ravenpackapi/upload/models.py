@@ -1,7 +1,7 @@
 from time import sleep
 
 from ravenpackapi.exceptions import api_method
-from ravenpackapi.upload.upload_utils import retry_404
+from ravenpackapi.upload.upload_utils import retry_on_too_early
 
 FILE_FIELDS = (
     'file_id', 'file_name', 'folder_id',
@@ -65,9 +65,9 @@ class File(object):
 
     @api_method
     def save_original(self, filename):
-        response = retry_404(self.api.request,
+        response = retry_on_too_early(self.api.request,
                              '%s/files/%s' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                             stream=True)
+                                      stream=True)
         with open(filename, 'wb') as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
@@ -75,13 +75,13 @@ class File(object):
     @api_method
     def save_analytics(self, filename, output_format='application/json'):
         self.wait_for_completion()
-        response = retry_404(self.api.request,
+        response = retry_on_too_early(self.api.request,
                              '%s/files/%s/analytics' % (self.api._UPLOAD_BASE_URL, self.file_id,),
-                             headers=dict(
+                                      headers=dict(
                                  Accept=output_format,
                                  **self.api.headers
                              ),
-                             stream=True)
+                                      stream=True)
         with open(filename, 'wb') as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
@@ -89,9 +89,9 @@ class File(object):
     @api_method
     def get_analytics(self, output_format='application/json'):
         self.wait_for_completion()
-        response = retry_404(self.api.request,
+        response = retry_on_too_early(self.api.request,
                              '%s/files/%s/analytics' % (self.api._UPLOAD_BASE_URL, self.file_id,),
-                             headers=dict(
+                                      headers=dict(
                                  Accept=output_format,
                                  **self.api.headers
                              ))
@@ -103,9 +103,9 @@ class File(object):
     @api_method
     def save_annotated(self, filename):
         self.wait_for_completion()
-        response = retry_404(self.api.request,
+        response = retry_on_too_early(self.api.request,
                              '%s/files/%s/annotated' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                             stream=True)
+                                      stream=True)
         with open(filename, 'wb') as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
@@ -113,17 +113,17 @@ class File(object):
     @api_method
     def get_annotated(self):
         self.wait_for_completion()
-        response = retry_404(self.api.request,
+        response = retry_on_too_early(self.api.request,
                              '%s/files/%s/annotated' % (self.api._UPLOAD_BASE_URL, self.file_id)
-                             )
+                                      )
         return response.text
 
     @api_method
     def delete(self):
-        response = retry_404(self.api.request,
+        response = retry_on_too_early(self.api.request,
                              '%s/files/%s' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                             method='delete'
-                             )
+                                      method='delete'
+                                      )
         return response
 
     @api_method
