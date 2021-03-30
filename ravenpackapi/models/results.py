@@ -46,6 +46,8 @@ class Result(object):
     def __getattr__(self, field):
         normalized_field = field.upper()
         analytics_field = FIELD_MAP.get(normalized_field)
+        if normalized_field not in FIELD_MAP:  # accessing unknown fields - i.e. Edge ones
+            return self.data[field]
         if analytics_field is None:
             return self.__getattribute__(field)
 

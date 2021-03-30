@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.46 (2021-04-05)
+Compatibility with RavenPack Edge
+
+* loosen validation for entity-types (in Edge we have various dynamical
+  EDETs)
+  
+* loosen validation for RT fields (in Edge we have several new fields)
+
+
 ## v1.0.43 (2020-11-04)
 
 * Entity-mapping - expose the matching score and the candidates

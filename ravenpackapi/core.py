@@ -10,12 +10,11 @@ from ravenpackapi.models.reference import RpEntityReference, EntityTypeReference
 from ravenpackapi.models.results import Results
 from ravenpackapi.upload.module import UploadApi
 from ravenpackapi.util import to_curl
-from ravenpackapi.utils.constants import ENTITY_TYPES
 from ravenpackapi.utils.date_formats import as_datetime_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.45'
+VERSION = '1.0.46'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -175,7 +174,6 @@ class RPApi(object):
     def get_entity_type_reference(self, entity_type=None):
         if entity_type:
             entity_type = entity_type.upper()
-        assert entity_type in ENTITY_TYPES, "Please provide a valid entity type, one of %s" % ENTITY_TYPES
         response = self.request(
             endpoint="/entity-reference",
             method='get',
