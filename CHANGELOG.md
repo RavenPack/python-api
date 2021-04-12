@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.47 (2021-04-12)
+Text analytics: Handle retry if too early on /metadata endpoint
+
 ## v1.0.46 (2021-04-05)
 Compatibility with RavenPack Edge
 
