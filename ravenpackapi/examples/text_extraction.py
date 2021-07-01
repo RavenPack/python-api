@@ -25,6 +25,9 @@ f.save_annotated("us30orig.xml")
 # or the original
 f.save_original("_orig.doc")
 
+# show the extracted text
+# extracted_text = f.text_extraction()
+
 # given a file we can set tags
 # f.set_metadata(tags=['file tag'])
 

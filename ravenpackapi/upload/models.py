@@ -156,6 +156,14 @@ class File(object):
             tags=self.tags,
         )
 
+    @api_method
+    def text_extraction(self, output_format="text/csv"):
+        response = self.api.request('%s/files/%s/text-extraction' % (self.api._UPLOAD_BASE_URL, self.file_id),
+                                    headers={**self.api.headers,
+                                             "Content-type": output_format},
+                                    )
+        return response.text
+
 
 class Folder(object):
     """ A Folder containing files """
@@ -199,7 +207,7 @@ class Folder(object):
 
     @api_method
     def delete(self):
-        response = self.api.request('%s/folder/%s' % (self.api._UPLOAD_BASE_URL, self.folder_id),
+        response = self.api.request('%s/folders/%s' % (self.api._UPLOAD_BASE_URL, self.folder_id),
                                     method='delete')
         return response
 
