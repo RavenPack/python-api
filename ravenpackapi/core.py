@@ -14,7 +14,7 @@ from ravenpackapi.utils.date_formats import as_datetime_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.47'
+VERSION = '1.0.48'
 
 logger = logging.getLogger("ravenpack.core")
 

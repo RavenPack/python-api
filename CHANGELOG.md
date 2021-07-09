@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.48 (2021-07-10)
+Text analytics: support for the /text-extraction endpoint
+
 ## v1.0.47 (2021-04-12)
 Text analytics: Handle retry if too early on /metadata endpoint
 
