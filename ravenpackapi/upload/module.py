@@ -59,18 +59,24 @@ class UploadApi(object):
 
     def file(self, name_or_file_handler,
              folder=None,
+             source_url=None,
              properties=None):
         """ Upload a file - file can be either a file name or a file handler """
         close_file = False
-        if isinstance(name_or_file_handler, str):
+        if source_url:
+            if not isinstance(name_or_file_handler, str):
+                raise ValueError("Please provide a filename together with the source_url parameter")
             filepath = name_or_file_handler
-            fh = open(filepath, 'rb')
-            close_file = True
         else:
-            filepath = name_or_file_handler.name
-            fh = name_or_file_handler
+            if isinstance(name_or_file_handler, str):
+                filepath = name_or_file_handler
+                fh = open(filepath, 'rb')
+                close_file = True
+            else:
+                filepath = name_or_file_handler.name
+                fh = name_or_file_handler
         file_name = os.path.basename(filepath)
-        content_type = mimetypes.guess_type(file_name)[0]
+
         if isinstance(folder, Folder):
             folder_id = folder.folder_id
         else:
@@ -80,6 +86,7 @@ class UploadApi(object):
             file_name=file_name,
             properties=properties,
             folder_id=folder_id,
+            source_url=source_url,
         )
 
         first_response = self.api.request(
@@ -92,32 +99,35 @@ class UploadApi(object):
 
         promise = first_response.json()
         file_id = promise['file_id']
-        location = promise['Location']
 
-        attempt = 3
-        while attempt:
-            try:
-                fh.seek(0)
-                self.api.request(
-                    endpoint=location,
-                    method='put',
-                    data=fh,
-                    headers={
-                        "x-amz-server-side-encryption": "AES256",
-                        "Content-Type": content_type,
-                    }
-                )
-            except APIException as e:
-                attempt -= 1
-                if attempt == 0:
-                    raise e  # raise the exception
-                logger.warning("Error with PUT file operation - retring")
-                sleep(1)
-            else:
-                break
+        if source_url is None:
+            # 2 steps upload - we now go and upload via the PUT method
+            location = promise['Location']
+            content_type = mimetypes.guess_type(file_name)[0]
+            attempt = 3
+            while attempt:
+                try:
+                    fh.seek(0)
+                    self.api.request(
+                        endpoint=location,
+                        method='put',
+                        data=fh,
+                        headers={
+                            "x-amz-server-side-encryption": "AES256",
+                            "Content-Type": content_type,
+                        }
+                    )
+                except APIException as e:
+                    attempt -= 1
+                    if attempt == 0:
+                        raise e  # raise the exception
+                    logger.warning("Error with PUT file operation - retring")
+                    sleep(1)
+                else:
+                    break
 
-        if close_file:  # we opened the handler, so let's close it
-            fh.close()
+            if close_file:  # we opened the handler, so let's close it
+                fh.close()
         return File(file_id,
                     api=self.api,
                     file_name=file_name)

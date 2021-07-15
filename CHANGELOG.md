@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.49 (2021-07-16)
+Text analytics: support for uploading via source_url
+
 ## v1.0.48 (2021-07-10)
 Text analytics: support for the /text-extraction endpoint
 

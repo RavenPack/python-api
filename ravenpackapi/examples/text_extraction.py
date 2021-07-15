@@ -11,7 +11,13 @@ for f in api.upload.list():
 f = api.upload.file("_orig.doc",
                     # properties={"primary_entity": "RavenPack"}
                     )
-f.wait_for_completion()
+
+# you can also upload from a publicly available URL
+# f = api.upload.file("demo.html",
+#                     source_url='https://www.w3.org/2001/06/utf-8-test/UTF-8-demo.html'
+#                     )
+
+f.wait_for_completion()  # optionally, wait for completition
 
 # we can also get it if we know the id
 # f = api.upload.get('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')

@@ -14,7 +14,7 @@ from ravenpackapi.utils.date_formats import as_datetime_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.48'
+VERSION = '1.0.49'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -85,7 +85,7 @@ class RPApi(object):
         )
         if self.log_curl_commands:
             logger.info("API query to %s" % to_curl(response.request))
-        if except_on_fail and response.status_code != 200:
+        if except_on_fail and response.status_code not in {200, 202}:
             logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
             raise get_exception(response)
         return response
