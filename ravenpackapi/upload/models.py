@@ -158,9 +158,10 @@ class File(object):
 
     @api_method
     def text_extraction(self, output_format="text/csv"):
+        headers = self.api.headers.copy()
+        headers["Content-type"] = output_format
         response = self.api.request('%s/files/%s/text-extraction' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                    headers={**self.api.headers,
-                                             "Content-type": output_format},
+                                    headers=headers,
                                     )
         return response.text
 
