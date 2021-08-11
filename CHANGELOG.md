@@ -1,4 +1,7 @@
 # Changelog
+## v1.0.51 (2021-08-11)
+Insider-transactions and Earnings-Dates API support:
+list the available files and download them to automate your process
 
 ## v1.0.49 (2021-07-16)
 Text analytics: support for uploading via source_url

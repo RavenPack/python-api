@@ -3,8 +3,8 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
-include ravenpackapi/upload/*
 
+recursive-include ravenpackapi *
 recursive-include tests *
 recursive-exclude * __pycache__
 recursive-exclude * .cache

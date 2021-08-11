@@ -6,7 +6,8 @@ from ravenpackapi.exceptions import (api_method,
                                      APIException,
                                      DataFileTimeout,
                                      JobNotProcessing)
-from ravenpackapi.util import to_curl, parse_csv_line
+from ravenpackapi.util import parse_csv_line
+from ravenpackapi.utils.file_saving import save_stream_response
 
 logger = logging.getLogger(__name__)
 
@@ -104,26 +105,16 @@ class Job(object):
     def save_to_file(self, filename):
         api = self.api
         job = self  # just to be clear
-        with open(filename, 'wb') as output:
-            job.wait_for_completion()
-            logger.info(u"Writing to %s" % filename)
+        job.wait_for_completion()
 
-            # this is a different request than the normal API
-            # streaming the file in chunks
-            response = api.session.get(job.url,
-                                       headers=api.headers,
-                                       stream=True,
-                                       **api.common_request_params
-                                       )
-            if response.status_code != 200:
-                logger.error("Error calling the API, we tried: %s" % to_curl(response.request))
-                raise APIException(
-                    'Got an error {status}: body was \'{error_message}\''.format(
-                        status=response.status_code, error_message=response.text
-                    ), response=response)
-            for chunk in response.iter_content(chunk_size=self._CHUNK_SIZE):
-                if chunk:
-                    output.write(chunk)
+        # this is a different request than the normal API
+        # streaming the file in chunks
+        response = api.session.get(job.url,
+                                   headers=api.headers,
+                                   stream=True,
+                                   **api.common_request_params
+                                   )
+        save_stream_response(response, filename, chunk_size=self._CHUNK_SIZE)
 
     @api_method
     def iterate_results(self, include_headers=False):

@@ -3,6 +3,7 @@ import os
 
 from ravenpackapi import Dataset
 from ravenpackapi.exceptions import get_exception
+from ravenpackapi.key_events.module import KeyEventsApi
 from ravenpackapi.models.dataset_list import DatasetList
 from ravenpackapi.models.job import Job
 from ravenpackapi.models.mapping import RPMappingResults
@@ -14,7 +15,7 @@ from ravenpackapi.utils.date_formats import as_datetime_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.50'
+VERSION = '1.0.51'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -46,6 +47,8 @@ class RPApi(object):
         self.log_curl_commands = True
         self.session = DynamicSession()
         self.upload = UploadApi(self)
+        self.insider_trasactions = KeyEventsApi(self, "insider-transactions")
+        self.earnings_dates = KeyEventsApi(self, "earnings-dates")
 
     @property
     def headers(self):
