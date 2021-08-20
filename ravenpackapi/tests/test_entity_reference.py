@@ -67,10 +67,11 @@ class TestEntityTypeReference(object):
     team_reference = api.get_entity_type_reference('team')
 
     @pytest.mark.slow
-    def test_save_team_reference(self):
+    @pytest.mark.parametrize("date", [None, datetime.date(2017, 8, 2)])
+    def test_save_team_reference(self, date):
         """ Get the team reference as a CSV """
 
-        team_reference = self.api.get_entity_type_reference('team')
+        team_reference = self.api.get_entity_type_reference('team', date=date)
         f = tempfile.NamedTemporaryFile(prefix='test_reference', delete=False)
         filepath = f.name
         team_reference.write_to_file(filepath)

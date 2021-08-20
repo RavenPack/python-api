@@ -1,25 +1,34 @@
 # Changelog
+
+## v1.0.52 (2021-08-20)
+
+Entity-type-reference: support to retrieve a reference in the past. It also supports to specify `reference_type="delta"`
+to retrieve just a daily difference of the changes (only for Edge).
+
 ## v1.0.51 (2021-08-11)
+
 Insider-transactions and Earnings-Dates API support:
 list the available files and download them to automate your process
 
 ## v1.0.49 (2021-07-16)
+
 Text analytics: support for uploading via source_url
 
 ## v1.0.48 (2021-07-10)
+
 Text analytics: support for the /text-extraction endpoint
 
 ## v1.0.47 (2021-04-12)
+
 Text analytics: Handle retry if too early on /metadata endpoint
 
 ## v1.0.46 (2021-04-05)
+
 Compatibility with RavenPack Edge
 
-* loosen validation for entity-types (in Edge we have various dynamical
-  EDETs)
-  
-* loosen validation for RT fields (in Edge we have several new fields)
+* loosen validation for entity-types (in Edge we have various dynamical EDETs)
 
+* loosen validation for RT fields (in Edge we have several new fields)
 
 ## v1.0.43 (2020-11-04)
 

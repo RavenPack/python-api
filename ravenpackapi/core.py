@@ -11,11 +11,11 @@ from ravenpackapi.models.reference import RpEntityReference, EntityTypeReference
 from ravenpackapi.models.results import Results
 from ravenpackapi.upload.module import UploadApi
 from ravenpackapi.util import to_curl
-from ravenpackapi.utils.date_formats import as_datetime_str
+from ravenpackapi.utils.date_formats import as_datetime_str, as_date_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.51'
+VERSION = '1.0.52'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -174,13 +174,19 @@ class RPApi(object):
         data = response.json()
         return RpEntityReference(rp_entity_id, data)
 
-    def get_entity_type_reference(self, entity_type=None):
+    def get_entity_type_reference(self,
+                                  entity_type=None,
+                                  reference_type='full',
+                                  date=None):
         if entity_type:
             entity_type = entity_type.upper()
+        params = {"entity_type": entity_type,
+                  "type": reference_type,
+                  "date": as_date_str(date) if date else None}
         response = self.request(
             endpoint="/entity-reference",
             method='get',
-            params={"entity_type": entity_type} if entity_type else None,
+            params={k: v for k, v in params.items() if v},  # exclude missing params
             stream=True,
         )
         return EntityTypeReference(http_response=response)

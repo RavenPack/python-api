@@ -47,3 +47,9 @@ def as_datetime_str(s):
     if isinstance(s, datetime.date):
         return s.strftime(DATETIME_FORMAT)
     return s
+
+
+def as_date_str(s):
+    if isinstance(s, datetime.date):
+        return s.strftime(DATE_FORMAT)
+    return s
