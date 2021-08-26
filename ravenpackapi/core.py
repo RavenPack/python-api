@@ -15,9 +15,20 @@ from ravenpackapi.utils.date_formats import as_datetime_str, as_date_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.52'
+VERSION = '1.0.53'
 
 logger = logging.getLogger("ravenpack.core")
+
+DEFAULT_ENDPOINTS = {
+    "api": {
+        "rpa": 'https://api.ravenpack.com/1.0',
+        "edge": 'https://api-edge.ravenpack.com/1.0',
+    },
+    "feed": {
+        "rpa": 'https://feed.ravenpack.com/1.0/json',
+        "edge": 'https://feed-edge.ravenpack.com/1.0/json',
+    }
+}
 
 
 class RPApi(object):
@@ -26,13 +37,17 @@ class RPApi(object):
         "timeout": (10, 60),  # 10 seconds on connection - 60 on read
     }
 
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, product="rpa"):
+        if product not in DEFAULT_ENDPOINTS['api']:
+            raise ValueError("Unknown product %s "
+                             "- please specify either 'rpa' or 'edge'" % product)
         self._BASE_URL = os.environ.get(
             'RP_API_ENDPOINT',
-            'https://api.ravenpack.com/1.0')
+            DEFAULT_ENDPOINTS["api"][product],
+        )
         self._FEED_BASE_URL = os.environ.get(
             'RP_FEED_ENDPOINT',
-            'https://feed.ravenpack.com/1.0/json'
+            DEFAULT_ENDPOINTS["feed"][product]
         )
         self._UPLOAD_BASE_URL = os.environ.get(
             'RP_UPLOAD_ENDPOINT',
@@ -49,6 +64,7 @@ class RPApi(object):
         self.upload = UploadApi(self)
         self.insider_trasactions = KeyEventsApi(self, "insider-transactions")
         self.earnings_dates = KeyEventsApi(self, "earnings-dates")
+        self.product = product
 
     @property
     def headers(self):
@@ -93,11 +109,12 @@ class RPApi(object):
             raise get_exception(response)
         return response
 
-    def list_datasets(self, scope=None, tags=None):
+    def list_datasets(self, scope=None, tags=None, product=None):
         """ Return a DataSetList of datasets in the scope """
         response = self.request('/datasets', params=dict(
             tags=tags or None,
             scope=scope or 'private',
+            product=product or self.product,
         ))
         return DatasetList(
             map(lambda item: Dataset.from_dict(item, api=self),
@@ -140,10 +157,12 @@ class RPApi(object):
              having=None,
              custom_fields=None,
              conditions=None,
-             product='rpa',
+             product=None,
              product_version='1.0',
              ):
         # let's build the body, with all the defined fields
+        if product is None:
+            product = self.product
         body = {"start_date": as_datetime_str(start_date),
                 "end_date": as_datetime_str(end_date),
                 "time_zone": time_zone}

@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.53 (2021-08-26)
+
+Product aware instance: allows to access edge just instanciating your api with
+
+```python
+api = RPApi(product="edge")
+```
+
 ## v1.0.52 (2021-08-20)
 
 Entity-type-reference: support to retrieve a reference in the past. It also supports to specify `reference_type="delta"`
