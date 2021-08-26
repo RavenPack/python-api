@@ -8,4 +8,4 @@ pytest-xdist
 tox
 
 coverage
-pandoc
+pandoc==1.1.0
