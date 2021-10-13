@@ -1,8 +1,8 @@
 import logging
-import random
 import time
 
 from ravenpackapi import RPApi, ApiConnectionError
+from ravenpackapi.utils.retry_logic import incremental_backoff
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -13,17 +13,7 @@ api = RPApi()
 # query the realtime feed
 ds = api.get_dataset(dataset_id='us500')
 
-
-def wait_between_attempts():
-    """ Incremental backoff between connection attempts """
-    wait_time = 0.3  # time is in seconds
-    while True:
-        yield wait_time
-        wait_time = min(wait_time * 1.5, 30)
-        wait_time *= (100 + random.randint(0, 50)) / 100
-
-
-wait_time = wait_between_attempts()
+wait_time = incremental_backoff()
 while True:
     try:
         for record in ds.request_realtime():

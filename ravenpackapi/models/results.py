@@ -38,10 +38,7 @@ class Result(object):
             self.data = record
 
     def __str__(self):
-        typed_object = OrderedDict(
-            [(field.name, field.get(self.data[field.name])) for field in ANALYTICS_FIELDS]
-        )
-        return str(typed_object)
+        return str(self.data)
 
     def __getattr__(self, field):
         normalized_field = field.upper()
