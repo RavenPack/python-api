@@ -60,7 +60,8 @@ class UploadApi(object):
     def file(self, name_or_file_handler,
              folder=None,
              source_url=None,
-             properties=None):
+             properties=None,
+             upload_mode=None):
         """ Upload a file - file can be either a file name or a file handler """
         close_file = False
         if source_url:
@@ -87,6 +88,7 @@ class UploadApi(object):
             properties=properties,
             folder_id=folder_id,
             source_url=source_url,
+            upload_mode=upload_mode,
         )
 
         first_response = self.api.request(

@@ -9,6 +9,7 @@ for f in api.upload.list():
 
 # upload a file to access the analytics
 f = api.upload.file("_orig.doc",
+                    # upload_mode="RPXML"
                     # properties={"primary_entity": "RavenPack"}
                     )
 
