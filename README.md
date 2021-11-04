@@ -163,17 +163,49 @@ for ticker in references.tickers:
         print(ticker)
 ```
 
-### Text Analytics
+## Text Analytics
 
 Analyse your own content using RavenPack’s proprietary NLP technology.
 
-The API for analyzing your internal content is still in beta and may change in the future. You can request an early
-access and [see an example of usage here](ravenpackapi/examples/text_extraction.py).
+The API for analyzing your internal content is still in beta and may change in the future. You can request an early access and [see an example of usage here](ravenpackapi/examples/text_analytics_example.py).
+
+### Uploading a file
+Upload a file to the system. In order to successfully have your files analized by RavenPack's text analytics platform, you need to perform the following method:
+
+```python
+f = api.upload.file("_orig.doc")
+```
+
+Different options and features are available when uploading a file for development. For more information, please check the user guide found on RavenPack's platform.
+
+### Getting analytics
+Saves analytics for the processed files. You can choose to retrieve analytics in JSON-Lines or CSV format:
+
+```python
+f.save_analytics("_analytics.json")
+```
+
+### Getting normalized documents
+RavenPack’s Text Analytics provides normalized content in JSON format, along with text categorization, tables in HTML format and metadata derived from the original document.
+
+```python
+f.save_text_extraction("_text_extraction.json")
+```
+
+It is also possible to obtain the normalized content in JSON format, along with annotations of entities, events and analytics derived from the content.
+
+```python
+f.save_annotated("_annotated_document.json", output_format='application/json')
+```
+
+For further details, please [see the example of usage exposed here](ravenpackapi/examples/text_analytics_example.py).
+
+
+
 
 ### Accessing the low-level requests
 
-RavenPack API wrapper is using the [requests library](https://2.python-requests.org) to do HTTPS requests, you can set
-common requests parameters to all the outbound calls by setting the `common_request_params` attribute.
+RavenPack API wrapper is using the [requests library](https://2.python-requests.org) to do HTTPS requests, you can set common requests parameters to all the outbound calls by setting the `common_request_params` attribute.
 
 For example, to disable HTTPS certificate verification and to setup your internal proxy:
 
