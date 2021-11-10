@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.56 (2021-11-04)
+
+Internal changes to speed up get_status and wait_for_completion file methods
+
 ## v1.0.53 (2021-08-26)
 
 Product aware instance: allows to access edge just instanciating your api with

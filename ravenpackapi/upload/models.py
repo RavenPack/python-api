@@ -1,6 +1,6 @@
 from time import sleep
 
-from ravenpackapi.exceptions import api_method
+from ravenpackapi.exceptions import api_method, APIException
 from ravenpackapi.upload.upload_utils import retry_on_too_early
 
 FILE_FIELDS = (
@@ -46,7 +46,24 @@ class File(object):
 
     @api_method
     def get_status(self):
-        self.get_metadata(force_refresh=True)
+        response = retry_on_too_early(
+            self.api.request,
+            '%s/files/%s/status' % (self.api._UPLOAD_BASE_URL, self.file_id)
+            )
+        api_status = response.json()
+        response.raise_for_status()
+
+        self.status = None
+        if api_status.get('error'):
+            raise APIException(
+                'Got an error {status}: body was \'{error_message}\''.format(
+                    status=response.status_code,
+                    error_message=api_status['error']
+                ), response=response
+            )
+        if api_status.get('status'):
+            self.status = api_status['status']
+
         return self.status
 
     @api_method
