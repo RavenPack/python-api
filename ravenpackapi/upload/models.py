@@ -102,11 +102,15 @@ class File(object):
             return response.text
 
     @api_method
-    def save_annotated(self, filename):
+    def save_annotated(self, filename, output_format='application/xml'):
         self.wait_for_completion()
         response = retry_on_too_early(self.api.request,
                                       '%s/files/%s/annotated' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                      stream=True)
+                                      stream=True,
+                                      headers=dict(
+                                          Accept=output_format,
+                                          **self.api.headers
+                                      ))
         with open(filename, 'wb') as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
@@ -164,6 +168,18 @@ class File(object):
                                     headers=headers,
                                     )
         return response.text
+
+    @api_method
+    def save_text_extraction(self, filename, output_format='application/json'):
+        headers = self.api.headers.copy()
+        headers["Content-type"] = output_format
+        response = retry_on_too_early(self.api.request,
+                                      '%s/files/%s/text-extraction' % (self.api._UPLOAD_BASE_URL, self.file_id),
+                                      stream=True,
+                                      headers=headers)
+        with open(filename, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
+                f.write(chunk)
 
 
 class Folder(object):
