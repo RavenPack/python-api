@@ -52,6 +52,12 @@ def decimal_optional(value):
     return None
 
 
+def float_optional(value):
+    if value is not None:
+        return float(value)
+    return None
+
+
 def int_optional(value):
     if value is not None:
         return int(value)
@@ -72,7 +78,7 @@ ANALYTICS_FIELDS = [
     Field('event_relevance', decimal_optional, validators=[between_inclusive(0, 100)]),
 
     Field('event_similarity_key', str_optional, validators=[length_is(32)]),
-    Field('event_similarity_days', int_optional),
+    Field('event_similarity_days', float_optional),
 
     Field('topic', str_optional),
     Field('group', str_optional),
