@@ -167,8 +167,6 @@ for ticker in references.tickers:
 
 Analyse your own content using RavenPack’s proprietary NLP technology.
 
-The API for analyzing your internal content is still in beta and may change in the future. You can request an early access and [see an example of usage here](ravenpackapi/examples/text_analytics_example.py).
-
 ### Uploading a file
 Upload a file to the system. In order to successfully have your files analized by RavenPack's text analytics platform, you need to perform the following method:
 
