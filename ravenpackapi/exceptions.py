@@ -66,5 +66,5 @@ class ValidationError(Exception):
     pass
 
 
-class ApiConnectionError(requests.ConnectionError):
+class ApiConnectionError(requests.RequestException):
     pass

@@ -15,7 +15,7 @@ from ravenpackapi.utils.date_formats import as_datetime_str, as_date_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.56'
+VERSION = '1.0.57'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -208,6 +208,8 @@ class RPApi(object):
             params={k: v for k, v in params.items() if v},  # exclude missing params
             stream=True,
         )
+        if self.product == 'edge':
+            response.encoding = 'utf-8'
         return EntityTypeReference(http_response=response)
 
     @staticmethod
