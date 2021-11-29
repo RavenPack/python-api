@@ -184,7 +184,7 @@ f.save_analytics("_analytics.json")
 ```
 
 ### Getting normalized documents
-RavenPack’s Text Analytics provides normalized content in JSON format, along with text categorization, tables in HTML format and metadata derived from the original document.
+RavenPack’s Text Analytics provides normalized content in JSON format, along with text categorization, tables and metadata derived from the original document.
 
 ```python
 f.save_text_extraction("_text_extraction.json")
