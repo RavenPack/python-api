@@ -33,7 +33,6 @@ f.wait_for_completion()  # optionally, wait for completition
 f.save_analytics("_analytics.json", output_format='application/json')
 
 # the annotated version
-# f.save_annotated("_annotated_document.xml", output_format='application/xml')
 f.save_annotated("_annotated_document.json", output_format='application/json')
 
 # or the original
