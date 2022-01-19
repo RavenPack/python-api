@@ -15,7 +15,7 @@ from ravenpackapi.utils.date_formats import as_datetime_str, as_date_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ('get', 'post', 'put', 'delete', 'patch')
-VERSION = '1.0.57'
+VERSION = '1.0.58'
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -201,6 +201,7 @@ class RPApi(object):
             entity_type = entity_type.upper()
         params = {"entity_type": entity_type,
                   "type": reference_type,
+                  "product": self.product,
                   "date": as_date_str(date) if date else None}
         response = self.request(
             endpoint="/entity-reference",
@@ -208,9 +209,7 @@ class RPApi(object):
             params={k: v for k, v in params.items() if v},  # exclude missing params
             stream=True,
         )
-        if self.product == 'edge':
-            response.encoding = 'utf-8'
-        return EntityTypeReference(http_response=response)
+        return EntityTypeReference(http_response=response, product=self.product)
 
     @staticmethod
     def get_entity_type_reference_from_file(file_path):

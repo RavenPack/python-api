@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.58 (2022-01-12)
+
+EntityTypeReference for Edge reference files - won't keep the entire mapping in memory anymore.
+This allows to grab the reference files and write them to file - or iterate through them - but they can't
+be accessed as rp_entity_id mappings anymore - for Edge only.
+
 ## v1.0.56 (2021-11-04)
 
 Internal changes to speed up get_status and wait_for_completion file methods

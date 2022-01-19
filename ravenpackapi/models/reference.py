@@ -103,12 +103,14 @@ class RpEntityReference(object):
 class EntityTypeReference(object):
     """ An object getting the references of many entities from a file """
 
-    def __init__(self, http_response=None, file_path=None):
+    def __init__(self, http_response=None, file_path=None, product='rpa'):
         super(EntityTypeReference, self).__init__()
         self.parse_start = self.parse_end = False
         self.http_response = http_response
         self.file_path = file_path
         self._entities = {}
+        self.product = product
+        self.encoding = 'utf-8' if self.product == "edge" else 'latin-1'
         assert http_response or file_path, "Please provide one source"
 
     def _iter_rows(self):
@@ -116,11 +118,12 @@ class EntityTypeReference(object):
             raise Exception("Reference file can be iterated only once")
         self.parse_start = True
         if self.http_response:
+            self.http_response.encoding = self.encoding
             lines = self.http_response.iter_lines(decode_unicode=True)
             for line in lines:
                 yield line
         elif self.file_path:
-            with io.open(self.file_path, encoding='latin-1') as f:
+            with io.open(self.file_path, encoding=self.encoding) as f:
                 for line in f.readlines():
                     yield line
         self.parse_end = True
@@ -132,19 +135,21 @@ class EntityTypeReference(object):
         for line in iterator:
             parsed_line = parse_csv_line(line)
             rp_entity_id, entity_type, data_type, data_value, range_start, range_end = parsed_line
-            if rp_entity_id not in self._entities:
-                self._entities[rp_entity_id] = entity = RpEntityReference(rp_entity_id, {},
-                                                                          entity_type=entity_type)
-            else:
-                entity = self._entities[rp_entity_id]
-            data_type = data_type.lower()
-            if data_type not in entity._data:
-                entity._data[data_type] = []
-            entity._data[data_type].append(dict(
-                data_value=data_value,
-                range_start=range_start,
-                range_end=range_end
-            ))
+            if self.product == 'rpa':
+                # we keep track of all the parsed entities just for rpa
+                if rp_entity_id not in self._entities:
+                    self._entities[rp_entity_id] = entity = RpEntityReference(rp_entity_id, {},
+                                                                              entity_type=entity_type)
+                else:
+                    entity = self._entities[rp_entity_id]
+                data_type = data_type.lower()
+                if data_type not in entity._data:
+                    entity._data[data_type] = []
+                entity._data[data_type].append(dict(
+                    data_value=data_value,
+                    range_start=range_start,
+                    range_end=range_end
+                ))
 
             yield line
 
@@ -157,7 +162,7 @@ class EntityTypeReference(object):
             This can be done only before the first iteration
         """
         logger.info("Writing Entity reference to %s" % filename)
-        with io.open(filename, 'w', encoding='latin-1') as output:
+        with io.open(filename, 'w', encoding=self.encoding) as output:
             for line in self._parse_lines():
                 output.write(line + '\n')
 
