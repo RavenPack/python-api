@@ -2,12 +2,15 @@ import os
 
 from ravenpackapi import RPApi
 
+# With Edge - the Reference-mapping are huge - so they're not kept in memory
+# you can either save them to file and filter them or query individual entities
+# like in the query_entity_reference.py example
 api = RPApi()
 
 reference_filename = 'reference.csv'
 if os.path.isfile(reference_filename):
     # use the locally saved reference file if it exists
-    reference = api.get_entity_type_referen = api.get_entity_type_reference_from_file(reference_filename)
+    reference = api.get_entity_type_reference_from_file(reference_filename)
 else:
     print("Retrieving the company mapping file")
     # get the latest reference file for all the COMP entities
