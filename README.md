@@ -28,6 +28,13 @@ from ravenpackapi import RPApi
 api = RPApi(api_key="YOUR_API_KEY")
 ```
 
+if you are using RavenPack EDGE set your API with the following code:
+```python
+from ravenpackapi import RPApi
+
+api = RPApi(api_key="YOUR_API_KEY", product="edge")
+```
+
 ### Creating a new dataset
 
 To create a dataset you can call the `create_dataset` method of the API with a Dataset instance.
