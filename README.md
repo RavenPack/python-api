@@ -46,7 +46,7 @@ ds = api.create_dataset(
     Dataset(
         name="New Dataset",
         filters={
-            "relevance": {
+            "event_relevance": {
                 "$gte": 90
             }
         },
@@ -59,13 +59,17 @@ print("Dataset created", ds)
 
 In the API wrapper, there are several models that maybe used for interacting with data.
 
-Here is how you may get a dataset definition for a pre-existing dataset
+Here is how you may get a dataset definition for a pre-existing dataset. 
+In this example we use _"US 30"_, one of _RavenPack_ public datasets with the
+_top30_ companies in the US. Note that the datasets are different for RPA and
+EDGE:
 
 ```python
-# Get the dataset description from the server, here we use 'us30'
-# one of RavenPack public datasets with the top30 companies in the US  
+dataset_id = 'us30'       # For RPA
+dataset_id = 'us30-edge'  # For EDGE
 
-ds = api.get_dataset(dataset_id='us30')
+# Get the dataset description from the server.
+ds = api.get_dataset(dataset_id=dataset_id)
 ```
 
 #### Downloads: json
