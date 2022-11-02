@@ -6,6 +6,7 @@ import datetime
 import threading
 
 from ravenpackapi import RPApi
+from ravenpackapi.exceptions import APIException
 from ravenpackapi.models.results import Result
 
 # import logging
@@ -19,19 +20,36 @@ class ConnectionChecker:
     def __init__(self, api_key, dataset_id, product):
         self.product = product
         self.api = RPApi(api_key, product)
+        self.dataset_id = dataset_id
+        self._dataset = None
         if not self.api.api_key:
             print(
                 "Please provide an APIKEY: with the --key parameter or setting the RP_API_KEY environment variable"
             )
             exit(1)
-        self.ds = self.api.get_dataset(dataset_id)
         self.date_end = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
         self.date_start = self.date_end - datetime.timedelta(
             minutes=1
         )  # 1 minute of data
 
+    @property
+    def dataset(self):
+        if self._dataset is None:
+            self._dataset = self.api.get_dataset(self.dataset_id)
+        return self._dataset
+
+    def user_has_product(self):
+        try:
+            datasets = self.api.list_datasets()
+        except APIException as e:
+            if e.response.status_code == 403:
+                # User has no access to product
+                return False
+            raise
+        return True
+
     def check_datafile(self):
-        job = self.ds.request_datafile(
+        job = self.dataset.request_datafile(
             start_date=self.date_start,
             end_date=self.date_end,
             fields=None,
@@ -54,7 +72,7 @@ class ConnectionChecker:
             return "rp_story_id"
 
     def check_json(self):
-        records = self.ds.json(
+        records = self.dataset.json(
             start_date=self.date_start,
             end_date=self.date_end,
             fields=[self.rp_story_id, "timestamp_utc"],
@@ -64,7 +82,7 @@ class ConnectionChecker:
         self.results["json"] = True
 
     def check_realtime(self):
-        for record in self.ds.request_realtime():
+        for record in self.dataset.request_realtime():
             assert isinstance(record, Result)
             break
         self.results["realtime"] = True
@@ -104,10 +122,19 @@ class ConnectionChecker:
 def run_checks(*checkers):
     print(f"Checking connection with APIKEY: {checkers[0].api.api_key} ...")
     print("This may take a few minutes")
+
+    valid_checkers = []
     for checker in checkers:
+        if not checker.user_has_product():
+            print("-" * 35)
+            print(f"[{checker.product.upper()}] No access. Skipping checks.")
+        else:
+            valid_checkers.append(checker)
+
+    for checker in valid_checkers:
         checker.check_all()
 
-    for checker in checkers:
+    for checker in valid_checkers:
         checker.print_results()
 
 
