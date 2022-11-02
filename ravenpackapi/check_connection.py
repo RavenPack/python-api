@@ -42,7 +42,7 @@ class ConnectionChecker:
         try:
             datasets = self.api.list_datasets()
         except APIException as e:
-            if e.response.status_code == 403:
+            if e.response.status_code in [400, 403]:
                 # User has no access to product
                 return False
             raise
