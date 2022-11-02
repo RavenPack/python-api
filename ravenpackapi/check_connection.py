@@ -12,7 +12,7 @@ from ravenpackapi.models.results import Result
 # logging.basicConfig(level=logging.DEBUG) # show all the API calls
 
 ALL_GRANULAR_DATA = "all-granular-data"
-NEWS_COMP = "0560FE1D2B70723364AF113465FD4673"
+US_500_EDGE = "us500-edge"
 
 
 class ConnectionChecker:
@@ -121,7 +121,7 @@ def main():
     args = parser.parse_args()
     run_checks(
         ConnectionChecker(args.key, ALL_GRANULAR_DATA, "rpa"),
-        ConnectionChecker(args.key, NEWS_COMP, "edge"),
+        ConnectionChecker(args.key, US_500_EDGE, "edge"),
     )
 
 
