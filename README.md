@@ -42,11 +42,14 @@ To create a dataset you can call the `create_dataset` method of the API with a D
 ```python
 from ravenpackapi import Dataset
 
+entity_relevance = "relevance"         # For RPA
+entity_relevance = "entity_relevance"  # For EDGE
+
 ds = api.create_dataset(
     Dataset(
         name="New Dataset",
         filters={
-            "event_relevance": {
+            entity_relevance: {
                 "$gte": 90
             }
         },
