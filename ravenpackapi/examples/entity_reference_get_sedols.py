@@ -3,7 +3,8 @@ import datetime
 
 from ravenpackapi import RPApi
 
-api = RPApi(product="rpa")  # Or product="edge"
+PRODUCT = "rpa"  # Or PRODUCT = "edge"
+api = RPApi(product=PRODUCT)
 
 
 def download_or_read_reference_file(reference_filename="reference.csv"):
@@ -31,7 +32,7 @@ if __name__ == "__main__":
         ("4A6F00", NOW),
         ("01F2E5", datetime.date(2019, 1, 1)),
     ]
-    if api.product == "edge":
+    if PRODUCT == "edge":
         # With Edge - the Reference-mapping are huge - so they're not kept in memory
         # you can either save them to file (about 2GB) and filter them or query
         # individual entities like this:
