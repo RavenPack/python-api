@@ -28,19 +28,15 @@ if __name__ == "__main__":
     # start_date = "2022-11-22"
     # end_date = "2022-11-23"
     DAYS_BACK = 1
-    end_date = datetime.datetime.utcnow().replace(microsecond=0)
-    start_date = end_date - datetime.timedelta(days=DAYS_BACK)
+    end = datetime.datetime.utcnow().replace(microsecond=0)
+    start = end - datetime.timedelta(days=DAYS_BACK)
 
     # Print all finished_jobs: completed or in error
-    finished_jobs = api.list_jobs(start_date, end_date, status=["completed", "error"])
-    print(
-        f"{len(finished_jobs)} jobs completed or in error between {start_date} and {end_date}:"
-    )
+    finished_jobs = api.list_jobs(start, end, status=["completed", "error"])
+    print(f"{len(finished_jobs)} jobs completed or in error between {start} and {end}:")
     print_jobs(finished_jobs)
 
     # Print running jobs
-    jobs = api.list_jobs(start_date, end_date, status=["processing"])
-    print(
-        f"{len(jobs)} jobs processing between {start_date} and {end_date} with tokens:"
-    )
+    jobs = api.list_jobs(start, end, status=["processing"])
+    print(f"{len(jobs)} jobs processing between {start} and {end}:")
     print_jobs(jobs)
