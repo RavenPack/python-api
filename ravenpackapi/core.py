@@ -127,7 +127,7 @@ class RPApi(object):
             "end_date": as_datetime_str(end_date),
             "status": status
         })
-        return [Job(self, job) for job in response.json()['jobs']]
+        return [Job(self, **job) for job in response.json()['jobs']]
 
     def create_dataset(self, dataset):
         # be sure to create a copy
