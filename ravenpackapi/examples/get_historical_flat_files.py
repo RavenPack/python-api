@@ -7,20 +7,28 @@ import zipfile
 from ravenpackapi import RPApi
 from ravenpackapi.util import parse_csv_line
 
+PRODUCT = "rpa"  # Or PRODUCT="edge"
+
+if PRODUCT == "rpa":
+    # Flat type for RPA:
+    FLAT_TYPE = "companies"  # One of "companies", "full"
+    # FLAT_TYPE = "full"
+else:
+    # Flat type for EDGE:
+    FLAT_TYPE = "ESS_POSITIVE"  # One of the many edge flatfiles
+
 
 def main():
-    api_key = os.environ["RP_API_KEY"]  # set your API KEY here
-    api = RPApi(api_key)
+    api = RPApi(product=PRODUCT)
 
-    flat_type = "companies"  # can be 'companies' or 'full'
-    flat_list = api.get_flatfile_list(flat_type)
+    flat_list = api.get_flatfile_list(FLAT_TYPE)
 
     for flat_file in flat_list:
         file_id = flat_file["id"]
         combined_year_filename = "%s.combined.csv" % file_id
         if os.path.isfile(combined_year_filename):
             continue
-        download_flatfile(api, flat_type, flat_file)
+        download_flatfile(api, FLAT_TYPE, flat_file)
         unzip_to_csv(file_id, combined_year_filename)
 
 
