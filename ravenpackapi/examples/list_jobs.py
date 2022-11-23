@@ -25,8 +25,8 @@ def print_job(job):
 
 if __name__ == "__main__":
     # Define start_date and end_date or use the current date
-    # start_date = "2022-11-22"
-    # end_date = "2022-11-23"
+    # start = "2022-11-22"
+    # end = "2022-11-23"
     DAYS_BACK = 1
     end = datetime.datetime.utcnow().replace(microsecond=0)
     start = end - datetime.timedelta(days=DAYS_BACK)
