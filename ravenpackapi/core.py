@@ -235,11 +235,19 @@ class RPApi(object):
         return response.json()['url']
 
     def get_flatfile_list(self, flatfile_type):
-        assert flatfile_type in {
-            'companies', 'full'
-        }
+        self._assert_flatfile_type_is_valid(flatfile_type)
         response = self.request('/history/%s' % flatfile_type)
         return response.json()
+
+    def _assert_flatfile_type_is_valid(self, flatfile_type):
+        if self.product == "rpa":
+            if flatfile_type in {"companies", "full"}:
+                return
+        else:
+            # In Edge we have too many different types to hardcode them here.
+            return
+        raise ValueError(f"Flatfile type {flatfile_type} is not valid for product {self.product}")
+
 
     def get_flatfile(self, flatfile_type, flatfile_id):
         """ Request the flatfile and return a streammable response """
