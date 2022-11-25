@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.0.58'
+VERSION = '1.0.59'
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -16,7 +16,7 @@ setup(
     license='MIT',
     long_description=readme,
     author='RavenPack',
-    author_email='dvarotto@ravenpack.com',
+    author_email='dataservices@ravenpack.com',
     description='RavenPack API - Python client',
 
     classifiers=[
