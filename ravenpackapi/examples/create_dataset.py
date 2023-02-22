@@ -19,27 +19,13 @@ ds = api.create_dataset(
                 "event_sentiment_score",
                 "topic",
                 "group",
-                "headline"
+                "headline",
             ],
             "filters": {
                 "$and": [
-                    {
-                        "relevance": {
-                            "$gte": 90
-                        }
-                    },
-                    {
-                        "country_code": {
-                            "$in": [
-                                "GB"
-                            ]
-                        }
-                    },
-                    {
-                        "event_sentiment_score": {
-                            "$nbetween": [-0.5, 0.5]
-                        }
-                    }
+                    {"relevance": {"$gte": 90}},
+                    {"country_code": {"$in": ["GB"]}},
+                    {"event_sentiment_score": {"$nbetween": [-0.5, 0.5]}},
                 ]
             },
             "frequency": "granular",
@@ -48,3 +34,8 @@ ds = api.create_dataset(
 )
 
 print("Dataset created", ds)
+
+do_delete = input(f"Do you want to delete the {ds}? (y/N)")
+if do_delete.upper() == 'Y':
+    ds.delete()
+    print("Deleted", ds)
