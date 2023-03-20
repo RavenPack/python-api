@@ -191,7 +191,7 @@ an Entity given the RP\_ENTITY\_ID
         if ticker.is_valid():
             print(ticker)
 
-Text Analytics
+Training Datasets
 ~~~~~~~~~~~~~~
 
 Analyse your own content using RavenPack’s proprietary NLP technology.
