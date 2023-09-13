@@ -192,7 +192,7 @@ an Entity given the RP\_ENTITY\_ID
             print(ticker)
 
 Training Datasets
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 Analyse your own content using RavenPack’s proprietary NLP technology.
 
