@@ -111,6 +111,7 @@ class EntityTypeReference(object):
         self._entities = {}
         self.product = product
         self.encoding = 'utf-8' if self.product == "edge" else 'latin-1'
+        self.store_in_memory = self.product == "rpa"
         assert http_response or file_path, "Please provide one source"
 
     def _iter_rows(self):
@@ -135,7 +136,7 @@ class EntityTypeReference(object):
         for line in iterator:
             parsed_line = parse_csv_line(line)
             rp_entity_id, entity_type, data_type, data_value, range_start, range_end = parsed_line
-            if self.product == 'rpa':
+            if self.store_in_memory:
                 # we keep track of all the parsed entities just for rpa
                 if rp_entity_id not in self._entities:
                     self._entities[rp_entity_id] = entity = RpEntityReference(rp_entity_id, {},
