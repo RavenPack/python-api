@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.60 (2023-09-13)
+
+New flag to store the entity mapping data in memory, when using `edge`. Use
+with caution.
+
+```python
+eref = api.get_entity_type_reference(entity_type, "full", file_date)
+eref.store_in_memory = True
+for entity in eref:
+    print(entity)
+```
+
 ## v1.0.58 (2022-01-12)
 
 EntityTypeReference for Edge reference files - won't keep the entire mapping in memory anymore.
