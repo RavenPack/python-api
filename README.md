@@ -133,7 +133,6 @@ The entity mapping endpoint allow you to find the RP_ENTITY_ID mapped to your un
 universe = [
     "RavenPack",
     {'ticker': 'AAPL'},
-    'California USA',
     {  # Amazon, specifying various fields
         "client_id": "12345-A",
         "date": "2017-01-01",
@@ -151,9 +150,8 @@ mapping = api.get_entity_mapping(universe)
 # in this case we match everything
 assert len(mapping.matched) == len(universe)
 assert [m.name for m in mapping.matched] == [
-    "RavenPack International S.L.",
+    "RavenPack Ltd.",
     "Apple Inc.",
-    "California, U.S.",
     "Amazon.com Inc."
 ]
 ```
