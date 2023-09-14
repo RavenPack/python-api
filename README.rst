@@ -146,7 +146,6 @@ to your universe of entities.
     universe = [
         "RavenPack",
         {'ticker': 'AAPL'},
-        'California USA',
         {  # Amazon, specifying various fields
             "client_id": "12345-A",
             "date": "2017-01-01",
@@ -164,9 +163,8 @@ to your universe of entities.
     # in this case we match everything
     assert len(mapping.matched) == len(universe)
     assert [m.name for m in mapping.matched] == [
-        "RavenPack International S.L.",
+        "RavenPack Ltd.",
         "Apple Inc.",
-        "California, U.S.",
         "Amazon.com Inc."
     ]
 
