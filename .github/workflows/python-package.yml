@@ -26,6 +26,7 @@ jobs:
         # Conda dependencies
         conda config --add channels conda-forge
         conda install conda-build
+        conda install anaconda-client
         conda install --yes --file requirements.txt
     - name: Lint with flake8
       run: |
@@ -41,8 +42,17 @@ jobs:
         pip install pytest
         pytest
     - name: Build Conda package
+      env:
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
       run: |
         python setup.py bdist_conda
+        cd /usr/share/miniconda/conda-bld
+        conda convert -p osx-64 linux-64/*.tar.bz2
+        conda convert -p win-64 linux-64/*.tar.bz2
+
+        anaconda upload --label main osx-64/*.tar.bz2
+        anaconda upload --label main linux-64/*.tar.bz2
+        anaconda upload --label main win-64/*.tar.bz2
     - name: Build Pip package
       run: |
         python setup.py sdist
