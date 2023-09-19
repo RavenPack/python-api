@@ -2,6 +2,7 @@
 
 ## v1.0.60 (2023-09-13)
 
+### Added
 New flag to store the entity mapping data in memory, when using `edge`. Use
 with caution.
 
@@ -12,11 +13,29 @@ for entity in eref:
     print(entity)
 ```
 
+## v1.0.59 (2022-11-25)
+
+### Added
+
+- New examples
+
+### Improved
+- Script to check the connection (check_connection.py) also checks edge.
+- Edge flatfiles can now be downloaded through the API, just like RPA
+  flatfiles
+- Old examples now work with edge as well. 
+
+### Fixed
+
+- Bug listing jobs
+
 ## v1.0.58 (2022-01-12)
 
-EntityTypeReference for Edge reference files - won't keep the entire mapping in memory anymore.
-This allows to grab the reference files and write them to file - or iterate through them - but they can't
-be accessed as rp_entity_id mappings anymore - for Edge only.
+### Improved
+`EntityTypeReference` for Edge reference files won't keep the entire mapping in
+memory anymore. This allows to grab the reference files and write them to file
+(or iterate through them) but they can't be accessed as rp_entity_id mappings
+anymore. For Edge only.
 
 ## v1.0.56 (2021-11-04)
 
@@ -126,5 +145,4 @@ data_count = ds.count(
     end_date='2018-01-05 18:01:00',
 )
 # {'count': 11, 'stories': 10, 'entities': 6}
-
 ``` 
