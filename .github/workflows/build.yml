@@ -1,14 +1,10 @@
-name: Python Package using Conda
-on: [push]
-
+# Reusable workflow
+# Generates the python packages for the CI pipeline (test) as well as the
+# release pipeline.
+name: Build Python Packages
+on: [workflow_call]
 jobs:
-  # Build packages
-  build-conda-package:
-    uses: ./.github/workflows/.conda-build.yml
-  build-pypi-package:
-    uses: ./.github/workflows/.pypi-build.yml
-  # Run tests
-  test:
+  conda:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
@@ -19,20 +15,59 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: '3.10'
-    - name: Install test dependencies
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Install dependencies
       run: |
         # Pip dependencies
         python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
-        pip install flake8
-    - name: Lint with flake8
+        pip install build
+        # Conda dependencies
+        conda config --add channels conda-forge
+        conda install --yes conda-build
+        conda install --yes --file requirements.txt
+    - name: Build Conda package
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      env:
-        RP_API_KEY: ${{ secrets.RP_API_KEY }}
+        python setup.py bdist_conda
+    - name: Copy Conda packages to local dist folder
       run: |
-        pytest
+        mkdir -p dist
+        cp -r /usr/share/miniconda/conda-bld/linux-64 ./dist
+        cd dist
+        conda convert -p osx-64 linux-64/*.tar.bz2
+        conda convert -p win-64 linux-64/*.tar.bz2
+
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: conda-dist
+        path: |
+          dist/*
+
+  pypi:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        # Pip dependencies
+        python -m pip install --upgrade pip
+        pip install build
+    - name: Build Pip package
+      run: |
+        python setup.py sdist
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: pypi-dist
+        path: |
+          dist/*

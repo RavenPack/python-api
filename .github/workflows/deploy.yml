@@ -1,19 +1,19 @@
-name: Deploy package to Anaconda
+name: Deploy packages to PyPI and Anaconda
 on:
   release:
-    types: [published]
+    types: [released]
 jobs:
   # Build packages
-  build-conda-package:
-    uses: ./.github/workflows/.conda-build.yml
+  build:
+    uses: ./.github/workflows/build.yml
 
-  # Deploy
-  deploy_conda:
+  # Anaconda
+  deploy-conda:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
     needs:
-    - build-conda-package
+    - build
     steps:
     - name: Download the conda dists
       uses: actions/download-artifact@v3
@@ -39,3 +39,27 @@ jobs:
         anaconda upload --label main osx-64/*.tar.bz2
         anaconda upload --label main linux-64/*.tar.bz2
         anaconda upload --label main win-64/*.tar.bz2
+
+  # Pypi
+  deploy-pypi:
+    environment:                               
+      name: pypi                               
+      url: https://test.pypi.org/p/ravenpackapi
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+    needs:
+    - build
+    steps:
+    - name: Download the pypi dists
+      uses: actions/download-artifact@v3
+      with:
+        name: pypi-dist
+        path: dist/
+    - name: Publish package distributions to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
