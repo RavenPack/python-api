@@ -68,9 +68,9 @@ jobs:
         python setup.py bdist_conda
     - name: Copy Conda packages to local dist folder
       run: |
-        mkdir -p dist
-        cp -r /usr/share/miniconda/conda-bld/linux-64 ./dist/
-        cd dist
+        mkdir -p dist-conda
+        cp -r /usr/share/miniconda/conda-bld/linux-64 ./dist-conda/
+        cd dist-conda
         conda convert -p osx-64 linux-64/*.tar.bz2
         conda convert -p win-64 linux-64/*.tar.bz2
 
@@ -79,7 +79,8 @@ jobs:
       with:
         name: python-package-distributions
         path: |
-          dist/*
+          dist/
+          dist-conda/
 
   dist:
     runs-on: ubuntu-latest
@@ -99,7 +100,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: python-package-distributions
-        path: dist/
+        # path: dist/
     - name: Set up Python 3.10 for Anaconda
       uses: actions/setup-python@v3
       with:
@@ -114,7 +115,7 @@ jobs:
         ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
       run: |
         ls
-        cd dist
+        cd dist-conda
         ls
         anaconda upload --label main osx-64/*.tar.bz2
         anaconda upload --label main linux-64/*.tar.bz2
