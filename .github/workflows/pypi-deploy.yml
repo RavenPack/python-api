@@ -1,0 +1,26 @@
+name: Deploy package to PyPI
+on:
+  release:
+    types: [released]
+jobs:
+  # Build packages
+  build-pypi-package:
+    uses: ./.github/workflows/.pypi-build.yml
+
+  # Deploy
+  deploy_conda:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+    needs:
+    - build_conda
+    steps:
+    - name: Download the pypi dists
+      uses: actions/download-artifact@v3
+      with:
+        name: pypi-dist
+        path: dist/
+    - name: Publish package distributions to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/

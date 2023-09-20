@@ -1,0 +1,38 @@
+name: Python Package using Conda
+on: [push]
+
+jobs:
+  # Build packages
+  build-conda-package:
+    uses: ./.github/workflows/.conda-build.yml
+  build-pypi-package:
+    uses: ./.github/workflows/.pypi-build.yml
+  # Run tests
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    - name: Install test dependencies
+      run: |
+        # Pip dependencies
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt
+        pip install flake8
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with pytest
+      env:
+        RP_API_KEY: ${{ secrets.RP_API_KEY }}
+      run: |
+        pytest

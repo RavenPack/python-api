@@ -1,0 +1,28 @@
+name: Build PyPI Python Package
+on: [workflow_call]
+jobs:
+  build-pypi-package:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        # Pip dependencies
+        python -m pip install --upgrade pip
+        pip install build
+    - name: Build Pip package
+      run: |
+        python setup.py sdist
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: pypi-dist
+        path: |
+          dist/*
