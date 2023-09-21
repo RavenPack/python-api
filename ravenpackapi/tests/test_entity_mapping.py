@@ -43,7 +43,7 @@ class TestEntityMapping(object):
         mapping = self.api.get_entity_mapping(universe)
         assert len(mapping.matched) == 4
         assert [m.name for m in mapping.matched] == [
-            "RavenPack International S.L.",
+            "RavenPack Holding AG",
             "Apple Inc.",
             "State of California, US",
             "Amazon.com Inc."
