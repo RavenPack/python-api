@@ -47,7 +47,6 @@ jobs:
       url: https://pypi.org/p/ravenpackapi
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
@@ -61,5 +60,3 @@ jobs:
         path: dist/
     - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://pypi.org/legacy/
