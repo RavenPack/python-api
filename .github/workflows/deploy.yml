@@ -44,7 +44,7 @@ jobs:
   deploy-pypi:
     environment:                               
       name: pypi                               
-      url: https://test.pypi.org/p/ravenpackapi
+      url: https://pypi.org/p/ravenpackapi
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
 
@@ -59,7 +59,7 @@ jobs:
       with:
         name: pypi-dist
         path: dist/
-    - name: Publish package distributions to TestPyPI
+    - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        repository-url: https://test.pypi.org/legacy/
+        repository-url: https://pypi.org/legacy/
