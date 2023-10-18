@@ -175,12 +175,12 @@ for ticker in references.tickers:
         print(ticker)
 ```
 
-## Training Data
+## RavenPack Annotations
 
 Analyse your own content using RavenPack’s proprietary NLP technology.
 
 ### Uploading a file
-Upload a file to the system. In order to successfully have your files analized by RavenPack's Training Data platform, you need to perform the following method:
+Upload a file to the system. In order to successfully have your files analized by RavenPack's Annotations platform, you need to perform the following method:
 
 ```python
 f = api.upload.file("_orig.doc")
@@ -196,7 +196,7 @@ f.save_analytics("_analytics.json")
 ```
 
 ### Getting normalized documents
-RavenPack’s Training Data provides normalized content in JSON format, along with text categorization, tables and metadata derived from the original document.
+RavenPack’s Annotations provides normalized content in JSON format, along with text categorization, tables and metadata derived from the original document.
 
 ```python
 f.save_text_extraction("_text_extraction.json")
@@ -208,7 +208,7 @@ It is also possible to obtain the normalized content in JSON format, along with 
 f.save_annotated("_annotated_document.json", output_format='application/json')
 ```
 
-For further details, please [see the example of usage exposed here](ravenpackapi/examples/training_data_example.py).
+For further details, please [see the example of usage exposed here](ravenpackapi/examples/ravenpack_annotations_example.py).
 
 
 
