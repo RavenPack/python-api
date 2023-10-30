@@ -35,5 +35,5 @@ setup(
     ],
 
     keywords='python analytics api rest news data',
-    install_requires=['requests[security]', 'future', 'python-dateutil', 'six', 'retry'],
+    install_requires=['requests[security]', 'python-dateutil', 'six', 'retry'],
 )

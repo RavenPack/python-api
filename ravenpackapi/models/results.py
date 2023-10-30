@@ -1,7 +1,7 @@
 import json
 from collections import OrderedDict
 
-from past.builtins import basestring
+from six import string_types, binary_type
 
 from ravenpackapi.models.fields import ANALYTICS_FIELDS_SET, FIELD_MAP, ANALYTICS_FIELDS
 
@@ -32,7 +32,7 @@ class Results(object):
 
 class Result(object):
     def __init__(self, record):
-        if isinstance(record, basestring):
+        if isinstance(record, string_types) or isinstance(record, binary_type):
             self.data = json.loads(record)
         else:
             self.data = record
