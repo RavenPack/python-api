@@ -3,7 +3,7 @@ class RPMappingResults(object):
         self.errors = []
         self.matched = []
         self.submitted = []
-        for mapping in data['identifiers_mapped']:
+        for mapping in data["identifiers_mapped"]:
             match = RPMappingMatch(mapping)
             self.submitted.append(match)
             if match.errors:
@@ -14,11 +14,10 @@ class RPMappingResults(object):
 
 class RPMappingMatch(object):
     def __init__(self, data):
-        self.request = data['request_data']
-        self.errors = data['errors']
+        self.request = data["request_data"]
+        self.errors = data["errors"]
         self.candidates = [
-            RPMappingCandidate(candidate)
-            for candidate in data.get('rp_entities', [])
+            RPMappingCandidate(candidate) for candidate in data.get("rp_entities", [])
         ]
 
         if not self.errors:
@@ -32,7 +31,7 @@ class RPMappingMatch(object):
 
 class RPMappingCandidate(object):
     def __init__(self, data):
-        self.id = data['rp_entity_id']
-        self.name = data['rp_entity_name']
-        self.type = data['rp_entity_type']
-        self.score = data['score']
+        self.id = data["rp_entity_id"]
+        self.name = data["rp_entity_name"]
+        self.type = data["rp_entity_type"]
+        self.score = data["score"]

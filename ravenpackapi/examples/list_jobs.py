@@ -4,6 +4,7 @@ updated in a time range, and prints them.
 """
 
 import datetime
+
 from ravenpackapi import RPApi
 
 # initialize the API (here we use the RP_API_KEY in os.environ)

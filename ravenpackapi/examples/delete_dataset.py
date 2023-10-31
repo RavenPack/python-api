@@ -1,4 +1,4 @@
-from ravenpackapi import RPApi, Dataset
+from ravenpackapi import Dataset, RPApi
 from ravenpackapi.exceptions import APIException404
 
 DATASET_ID = "THE_ID_OF_THE_DATASET_TO_DOWNLOAD"

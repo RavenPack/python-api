@@ -1,3 +1,3 @@
-from .models.dataset import Dataset
 from .core import RPApi
 from .exceptions import ApiConnectionError
+from .models.dataset import Dataset

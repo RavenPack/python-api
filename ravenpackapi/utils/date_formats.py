@@ -5,14 +5,14 @@ from six import string_types
 from ravenpackapi.exceptions import ValidationError
 
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
-DATE_FORMAT = '%Y-%m-%d'
-DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+DATE_FORMAT = "%Y-%m-%d"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 ALLOWED_DATETIME_FORMATS = (
     "%Y-%m-%d %H:%M:%S.%f",
-    '%Y-%m-%d',
-    '%Y-%m-%d %H:%M:%S',
-    '%Y-%m-%d %H:%M'
+    "%Y-%m-%d",
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M",
 )
 
 

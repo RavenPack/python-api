@@ -1,0 +1,15 @@
+# See https://pre-commit.com for more information
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+      - id: black
+        # There is an issue with click==8.1.0 and black in commit hook
+        # See https://github.com/psf/black/issues/2964#issuecomment-1080974737
+        additional_dependencies: ['click==8.0.4']
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: isort (python)
+        args: [--profile, black]

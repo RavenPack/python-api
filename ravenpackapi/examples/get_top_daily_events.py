@@ -1,9 +1,9 @@
 # anf how to get the top 3 event groups for a day based on volume
+import csv
 import datetime
 import os.path
-import csv
 
-from ravenpackapi import RPApi, Dataset
+from ravenpackapi import Dataset, RPApi
 
 DATASET_ID = "all-granular-data-edge"
 PRODUCT = "edge"  # Or PRODUCT = "rpa"

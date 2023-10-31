@@ -1,5 +1,6 @@
-from ravenpackapi import RPApi, Dataset
 import logging
+
+from ravenpackapi import Dataset, RPApi
 
 logging.basicConfig(level=logging.INFO)
 

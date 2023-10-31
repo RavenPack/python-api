@@ -7,8 +7,8 @@ class TestRecentAnalyticsRetried:
     api = RPApi()
 
     def test_upload_delete_retry(self):
-        """ When we delete immediately after creation we get a 404
-            The API should silently retry for some time
+        """When we delete immediately after creation we get a 404
+        The API should silently retry for some time
         """
         api = self.api
         filename = "upload_sample.txt"

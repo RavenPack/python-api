@@ -1,4 +1,4 @@
-from ravenpackapi import RPApi, Dataset
+from ravenpackapi import Dataset, RPApi
 
 api = RPApi()
 
@@ -36,6 +36,6 @@ ds = api.create_dataset(
 print("Dataset created", ds)
 
 do_delete = input(f"Do you want to delete the {ds}? (y/N)")
-if do_delete.upper() == 'Y':
+if do_delete.upper() == "Y":
     ds.delete()
     print("Deleted", ds)

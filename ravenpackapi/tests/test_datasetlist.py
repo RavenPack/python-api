@@ -1,6 +1,6 @@
 import pytest
 
-from ravenpackapi import RPApi, Dataset
+from ravenpackapi import Dataset, RPApi
 
 
 @pytest.mark.datasets
@@ -21,7 +21,7 @@ class TestDatasetRetrieval(object):
     api = RPApi()
 
     def test_get_dataset(self):
-        dataset_id = 'us30'
+        dataset_id = "us30"
         ds_by_id = Dataset(api=self.api, id=dataset_id)
         filters = ds_by_id.filters
 

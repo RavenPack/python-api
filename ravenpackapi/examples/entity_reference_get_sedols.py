@@ -1,5 +1,5 @@
-import os
 import datetime
+import os
 
 from ravenpackapi import RPApi
 
@@ -43,7 +43,10 @@ if __name__ == "__main__":
     else:
         reference = download_or_read_reference_file()
 
-    for entity_key, when, in entities:
+    for (
+        entity_key,
+        when,
+    ) in entities:
         company = reference[entity_key]
         valid_sedols = get_valid_sedols(company, when)
         print(company.name, valid_sedols)

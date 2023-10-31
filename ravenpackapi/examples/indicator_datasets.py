@@ -1,4 +1,4 @@
-from ravenpackapi import RPApi, Dataset
+from ravenpackapi import Dataset, RPApi
 from ravenpackapi.utils.helpers import delete_all_datasets_by_name
 
 PRODUCT = "rpa"  # Or PRODUCT = "edge"

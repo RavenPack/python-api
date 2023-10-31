@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from ravenpackapi import RPApi, Dataset
+from ravenpackapi import Dataset, RPApi
 from ravenpackapi.utils.helpers import delete_all_datasets_by_name
 
 logger = logging.getLogger(__name__)
@@ -10,14 +10,15 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.datasets
 class TestDatasetCRUD(object):
-    """ try to Create a dataset, Read it Update it and Delete it"""
+    """try to Create a dataset, Read it Update it and Delete it"""
+
     api = RPApi()
-    dataset_name = 'testing_api_crud'
+    dataset_name = "testing_api_crud"
 
     def test_get_public_dataset_list(self):
-        datasets = self.api.list_datasets(scope='public')
-        assert 'us30' in datasets, 'US30 should be in public datasets'
-        assert len(datasets) > 100, 'We expect at least 100 public RavenPack datasets'
+        datasets = self.api.list_datasets(scope="public")
+        assert "us30" in datasets, "US30 should be in public datasets"
+        assert len(datasets) > 100, "We expect at least 100 public RavenPack datasets"
 
     def test_get_private_dataset_list(self):
         datasets = self.api.list_datasets()
@@ -29,15 +30,15 @@ class TestDatasetCRUD(object):
         delete_all_datasets_by_name(self.api, self.dataset_name)
 
         # create the dataset
-        filters = {"rp_entity_id": {"$in": ['D8442A']}}
+        filters = {"rp_entity_id": {"$in": ["D8442A"]}}
         dataset = Dataset(
             name=self.dataset_name,
             filters=filters,  # a dataset with a filter
         )
-        new_dataset = self.api.create_dataset(
-            dataset
-        )
-        assert new_dataset.filters == dataset.filters, "Created dataset filters are not as expected"
+        new_dataset = self.api.create_dataset(dataset)
+        assert (
+            new_dataset.filters == dataset.filters
+        ), "Created dataset filters are not as expected"
         assert new_dataset.id is not None, "We should have a dataset id"
 
         owned_dataset = self.api.list_datasets()
@@ -50,18 +51,17 @@ class TestDatasetCRUD(object):
 
 
 class TestDatasetCreation(object):
-
     def test_valid_additional_fields(self):
-        dt = '2020-01-01'
-        d = Dataset(id='us30', creation_time=dt, last_modified=dt)
-        assert d.id == 'us30'
+        dt = "2020-01-01"
+        d = Dataset(id="us30", creation_time=dt, last_modified=dt)
+        assert d.id == "us30"
         assert d.creation_time == d.last_modified == dt
 
     def test_valid_uuid(self):
-        d = Dataset(uuid='us30')
-        assert d.id == 'us30'
+        d = Dataset(uuid="us30")
+        assert d.id == "us30"
 
     def test_invalid_additional_fields(self):
-        dt = '2020-01-01'
+        dt = "2020-01-01"
         with pytest.raises(ValueError):
-            Dataset(id='us30', creation_time=dt, last_modified=dt, invalid_field=1)
+            Dataset(id="us30", creation_time=dt, last_modified=dt, invalid_field=1)

@@ -6,7 +6,7 @@ from operator import itemgetter
 from ravenpackapi.util import parse_csv_line
 from ravenpackapi.utils.date_formats import as_date
 
-logger = logging.getLogger('ravenpack.reference')
+logger = logging.getLogger("ravenpack.reference")
 
 
 class RPEntityMetadata(object):
@@ -17,7 +17,7 @@ class RPEntityMetadata(object):
         self.end = as_date(end)
 
     def is_valid(self, when=None):
-        """ Check that the metadata is valid at the given time (default to now)"""
+        """Check that the metadata is valid at the given time (default to now)"""
         if when is None:
             when = datetime.date.today()  # default to today
         when = as_date(when)
@@ -29,9 +29,7 @@ class RPEntityMetadata(object):
         return True
 
     def __str__(self):
-        return "Value: {value} - valid from {start} to {end}".format(
-            **self.__dict__
-        )
+        return "Value: {value} - valid from {start} to {end}".format(**self.__dict__)
 
 
 _MAPPED_FIELDS = {
@@ -43,21 +41,43 @@ _MAPPED_FIELDS = {
     "validities": "validity",
 }
 _MAPPED_FIELDS.update(  # all regular plurals
-    {"{}s".format(name): name for name in (
-        'country_id', 'cusip', 'description',
-        'name', 'entity_name',
-        'geoname_id', 'government', 'has_member_id',
-        'is_member_id', 'iso_code',
-        'latitude', 'longitude',
-
-        'isin', 'listing', 'mic', 'ticker',
-        'organization_type', 'organization_type_id',
-        'parent_org_id', 'parent_product_type',
-        'parent_source', 'place_type', 'product_owner',
-        'product_type', 'province', 'publication_type',
-        'region_id', 'sedol', 'source_rank',
-        'symbol', 'team_type', 'type',
-    )}
+    {
+        "{}s".format(name): name
+        for name in (
+            "country_id",
+            "cusip",
+            "description",
+            "name",
+            "entity_name",
+            "geoname_id",
+            "government",
+            "has_member_id",
+            "is_member_id",
+            "iso_code",
+            "latitude",
+            "longitude",
+            "isin",
+            "listing",
+            "mic",
+            "ticker",
+            "organization_type",
+            "organization_type_id",
+            "parent_org_id",
+            "parent_product_type",
+            "parent_source",
+            "place_type",
+            "product_owner",
+            "product_type",
+            "province",
+            "publication_type",
+            "region_id",
+            "sedol",
+            "source_rank",
+            "symbol",
+            "team_type",
+            "type",
+        )
+    }
 )
 
 
@@ -72,18 +92,16 @@ class RpEntityReference(object):
         data_field = _MAPPED_FIELDS.get(field)
         if data_field:
             metadata_records = self._data.get(data_field, [])
-            metadata_records.sort(key=itemgetter('range_start'))
+            metadata_records.sort(key=itemgetter("range_start"))
             return [
-                RPEntityMetadata(d['data_value'],
-                                 d['range_start'],
-                                 d['range_end'])
+                RPEntityMetadata(d["data_value"], d["range_start"], d["range_end"])
                 for d in metadata_records
             ]
         else:
             return self.__getattribute__(field)
 
     def __dir__(self):
-        """ Help autocompleting this additional fields """
+        """Help autocompleting this additional fields"""
         return list(super(RpEntityReference, self).__dir__()) + [
             k for k in _MAPPED_FIELDS
         ]
@@ -95,22 +113,21 @@ class RpEntityReference(object):
 
     def __repr__(self):
         return "Reference for Entity {rp_entity_id}: {name}".format(
-            rp_entity_id=self.rp_entity_id,
-            name=self.name
+            rp_entity_id=self.rp_entity_id, name=self.name
         )
 
 
 class EntityTypeReference(object):
-    """ An object getting the references of many entities from a file """
+    """An object getting the references of many entities from a file"""
 
-    def __init__(self, http_response=None, file_path=None, product='rpa'):
+    def __init__(self, http_response=None, file_path=None, product="rpa"):
         super(EntityTypeReference, self).__init__()
         self.parse_start = self.parse_end = False
         self.http_response = http_response
         self.file_path = file_path
         self._entities = {}
         self.product = product
-        self.encoding = 'utf-8' if self.product == "edge" else 'latin-1'
+        self.encoding = "utf-8" if self.product == "edge" else "latin-1"
         self.store_in_memory = self.product == "rpa"
         assert http_response or file_path, "Please provide one source"
 
@@ -135,22 +152,32 @@ class EntityTypeReference(object):
         yield headers
         for line in iterator:
             parsed_line = parse_csv_line(line)
-            rp_entity_id, entity_type, data_type, data_value, range_start, range_end = parsed_line
+            (
+                rp_entity_id,
+                entity_type,
+                data_type,
+                data_value,
+                range_start,
+                range_end,
+            ) = parsed_line
             if self.store_in_memory:
                 # we keep track of all the parsed entities just for rpa
                 if rp_entity_id not in self._entities:
-                    self._entities[rp_entity_id] = entity = RpEntityReference(rp_entity_id, {},
-                                                                              entity_type=entity_type)
+                    self._entities[rp_entity_id] = entity = RpEntityReference(
+                        rp_entity_id, {}, entity_type=entity_type
+                    )
                 else:
                     entity = self._entities[rp_entity_id]
                 data_type = data_type.lower()
                 if data_type not in entity._data:
                     entity._data[data_type] = []
-                entity._data[data_type].append(dict(
-                    data_value=data_value,
-                    range_start=range_start,
-                    range_end=range_end
-                ))
+                entity._data[data_type].append(
+                    dict(
+                        data_value=data_value,
+                        range_start=range_start,
+                        range_end=range_end,
+                    )
+                )
 
             yield line
 
@@ -159,13 +186,13 @@ class EntityTypeReference(object):
             pass
 
     def write_to_file(self, filename):
-        """ This will consume the lines and write them to disk
-            This can be done only before the first iteration
+        """This will consume the lines and write them to disk
+        This can be done only before the first iteration
         """
         logger.info("Writing Entity reference to %s" % filename)
-        with io.open(filename, 'w', encoding=self.encoding) as output:
+        with io.open(filename, "w", encoding=self.encoding) as output:
             for line in self._parse_lines():
-                output.write(line + '\n')
+                output.write(line + "\n")
 
     def __getitem__(self, rp_entity_id):
         if not self.parse_end:

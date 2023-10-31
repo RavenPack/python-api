@@ -8,7 +8,7 @@ class TestDatasetCount(object):
 
     @pytest.mark.json
     def test_count_timezone(self):
-        ds = self.api.get_dataset(dataset_id='us30')
+        ds = self.api.get_dataset(dataset_id="us30")
         count_results_utc = ds.count(
             start_date="2019-05-14",
             end_date="2019-05-15",
@@ -16,9 +16,7 @@ class TestDatasetCount(object):
         assert isinstance(count_results_utc, dict)
 
         count_results_london = ds.count(
-            start_date="2019-05-14",
-            end_date="2019-05-15",
-            time_zone="Europe/London"
+            start_date="2019-05-14", end_date="2019-05-15", time_zone="Europe/London"
         )
         assert isinstance(count_results_london, dict)
 

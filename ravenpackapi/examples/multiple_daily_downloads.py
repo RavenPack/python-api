@@ -2,7 +2,7 @@
 import datetime
 from typing import List
 
-from ravenpackapi import RPApi, Dataset
+from ravenpackapi import Dataset, RPApi
 
 api = RPApi(api_key="YOUR_API_KEY")
 dataset_ids = [

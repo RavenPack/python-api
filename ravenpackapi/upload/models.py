@@ -1,33 +1,46 @@
 from time import sleep
 
-from ravenpackapi.exceptions import api_method, APIException
+from ravenpackapi.exceptions import APIException, api_method
 from ravenpackapi.upload.upload_utils import retry_on_too_early
 
 FILE_FIELDS = (
-    'file_id', 'file_name', 'folder_id',
-    'status',
-    'upload_ts', 'raw_size', 'starred', 'trashed',
-    'tags',
+    "file_id",
+    "file_name",
+    "folder_id",
+    "status",
+    "upload_ts",
+    "raw_size",
+    "starred",
+    "trashed",
+    "tags",
 )
 
 FOLDER_FIELDS = (
-    'folder_id', 'parent_folder_id',
-    'folder_name',
-    'starred', 'trashed',
+    "folder_id",
+    "parent_folder_id",
+    "folder_name",
+    "starred",
+    "trashed",
 )
 
 
 class File(object):
-    """ A promise to get a file """
+    """A promise to get a file"""
 
     # check FILE_FIELD for the supported fields
-    def __init__(self, file_id,
-                 file_name=None, folder_id=None,
-                 status=None,
-                 upload_ts=None, raw_size=None, starred=None, trashed=None,
-                 tags=None,
-                 api=None,
-                 ):
+    def __init__(
+        self,
+        file_id,
+        file_name=None,
+        folder_id=None,
+        status=None,
+        upload_ts=None,
+        raw_size=None,
+        starred=None,
+        trashed=None,
+        tags=None,
+        api=None,
+    ):
         self.api = api
         self.file_id = file_id
         self.folder_id = folder_id
@@ -48,21 +61,21 @@ class File(object):
     def get_status(self):
         response = retry_on_too_early(
             self.api.request,
-            '%s/files/%s/status' % (self.api._UPLOAD_BASE_URL, self.file_id)
-            )
+            "%s/files/%s/status" % (self.api._UPLOAD_BASE_URL, self.file_id),
+        )
         api_status = response.json()
         response.raise_for_status()
 
         self.status = None
-        if api_status.get('error'):
+        if api_status.get("error"):
             raise APIException(
-                'Got an error {status}: body was \'{error_message}\''.format(
-                    status=response.status_code,
-                    error_message=api_status['error']
-                ), response=response
+                "Got an error {status}: body was '{error_message}'".format(
+                    status=response.status_code, error_message=api_status["error"]
+                ),
+                response=response,
             )
-        if api_status.get('status'):
-            self.status = api_status['status']
+        if api_status.get("status"):
+            self.status = api_status["status"]
 
         return self.status
 
@@ -71,98 +84,113 @@ class File(object):
         if self.file_name and not force_refresh:  # we already have the file metadata
             pass
         else:
-            response = retry_on_too_early(self.api.request,
-                                          '%s/files/%s/metadata' % (self.api._UPLOAD_BASE_URL, self.file_id))
+            response = retry_on_too_early(
+                self.api.request,
+                "%s/files/%s/metadata" % (self.api._UPLOAD_BASE_URL, self.file_id),
+            )
             metadata = response.json()
             for field in FILE_FIELDS:
                 setattr(self, field, metadata.get(field))
         return {  # return the known metadata
-            field: getattr(self, field)
-            for field in FILE_FIELDS
+            field: getattr(self, field) for field in FILE_FIELDS
         }
 
     @api_method
     def save_original(self, filename):
-        response = retry_on_too_early(self.api.request,
-                                      '%s/files/%s' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                      stream=True)
-        with open(filename, 'wb') as f:
+        response = retry_on_too_early(
+            self.api.request,
+            "%s/files/%s" % (self.api._UPLOAD_BASE_URL, self.file_id),
+            stream=True,
+        )
+        with open(filename, "wb") as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
 
     @api_method
-    def save_analytics(self, filename, output_format='application/json'):
+    def save_analytics(self, filename, output_format="application/json"):
         self.wait_for_completion()
-        response = retry_on_too_early(self.api.request,
-                                      '%s/files/%s/analytics' % (self.api._UPLOAD_BASE_URL, self.file_id,),
-                                      headers=dict(
-                                          Accept=output_format,
-                                          **self.api.headers
-                                      ),
-                                      stream=True)
-        with open(filename, 'wb') as f:
+        response = retry_on_too_early(
+            self.api.request,
+            "%s/files/%s/analytics"
+            % (
+                self.api._UPLOAD_BASE_URL,
+                self.file_id,
+            ),
+            headers=dict(Accept=output_format, **self.api.headers),
+            stream=True,
+        )
+        with open(filename, "wb") as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
 
     @api_method
-    def get_analytics(self, output_format='application/json'):
+    def get_analytics(self, output_format="application/json"):
         self.wait_for_completion()
-        response = retry_on_too_early(self.api.request,
-                                      '%s/files/%s/analytics' % (self.api._UPLOAD_BASE_URL, self.file_id,),
-                                      headers=dict(
-                                          Accept=output_format,
-                                          **self.api.headers
-                                      ))
-        if output_format == 'application/json':
+        response = retry_on_too_early(
+            self.api.request,
+            "%s/files/%s/analytics"
+            % (
+                self.api._UPLOAD_BASE_URL,
+                self.file_id,
+            ),
+            headers=dict(Accept=output_format, **self.api.headers),
+        )
+        if output_format == "application/json":
             return response.json()
         else:
             return response.text
 
     @api_method
-    def save_annotated(self, filename, output_format='application/xml'):
+    def save_annotated(self, filename, output_format="application/xml"):
         self.wait_for_completion()
-        response = retry_on_too_early(self.api.request,
-                                      '%s/files/%s/annotated' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                      stream=True,
-                                      headers=dict(
-                                          Accept=output_format,
-                                          **self.api.headers
-                                      ))
-        with open(filename, 'wb') as f:
+        response = retry_on_too_early(
+            self.api.request,
+            "%s/files/%s/annotated" % (self.api._UPLOAD_BASE_URL, self.file_id),
+            stream=True,
+            headers=dict(Accept=output_format, **self.api.headers),
+        )
+        with open(filename, "wb") as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
 
     @api_method
     def get_annotated(self):
         self.wait_for_completion()
-        response = retry_on_too_early(self.api.request,
-                                      '%s/files/%s/annotated' % (self.api._UPLOAD_BASE_URL, self.file_id)
-                                      )
+        response = retry_on_too_early(
+            self.api.request,
+            "%s/files/%s/annotated" % (self.api._UPLOAD_BASE_URL, self.file_id),
+        )
         return response.text
 
     @api_method
     def delete(self):
-        response = retry_on_too_early(self.api.request,
-                                      '%s/files/%s' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                      method='delete'
-                                      )
+        response = retry_on_too_early(
+            self.api.request,
+            "%s/files/%s" % (self.api._UPLOAD_BASE_URL, self.file_id),
+            method="delete",
+        )
         return response
 
     @api_method
-    def set_metadata(self,
-                     file_name=None,
-                     folder_id=None,
-                     trashed=None, starred=None,
-                     tags=None
-                     ):
-        metadata = {k: v
-                    for k, v in dict(file_name=file_name, folder_id=folder_id,
-                                     trashed=trashed, starred=starred, tags=tags,
-                                     ).items()
-                    if v is not None}
-        self.api.request('%s/files/%s/metadata' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                         json=metadata,
-                         method='patch')
+    def set_metadata(
+        self, file_name=None, folder_id=None, trashed=None, starred=None, tags=None
+    ):
+        metadata = {
+            k: v
+            for k, v in dict(
+                file_name=file_name,
+                folder_id=folder_id,
+                trashed=trashed,
+                starred=starred,
+                tags=tags,
+            ).items()
+            if v is not None
+        }
+        self.api.request(
+            "%s/files/%s/metadata" % (self.api._UPLOAD_BASE_URL, self.file_id),
+            json=metadata,
+            method="patch",
+        )
 
     def wait_for_completion(self):
         while self.status not in {"COMPLETED", "DELETED", "FAILED"}:
@@ -173,7 +201,8 @@ class File(object):
         self.set_metadata(
             file_name=self.file_name,
             folder_id=self.folder_id,
-            trashed=self.trashed, starred=self.starred,
+            trashed=self.trashed,
+            starred=self.starred,
             tags=self.tags,
         )
 
@@ -181,33 +210,39 @@ class File(object):
     def text_extraction(self, output_format="text/csv"):
         headers = self.api.headers.copy()
         headers["Content-type"] = output_format
-        response = self.api.request('%s/files/%s/text-extraction' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                    headers=headers,
-                                    )
+        response = self.api.request(
+            "%s/files/%s/text-extraction" % (self.api._UPLOAD_BASE_URL, self.file_id),
+            headers=headers,
+        )
         return response.text
 
     @api_method
-    def save_text_extraction(self, filename, output_format='application/json'):
+    def save_text_extraction(self, filename, output_format="application/json"):
         headers = self.api.headers.copy()
         headers["Content-type"] = output_format
-        response = retry_on_too_early(self.api.request,
-                                      '%s/files/%s/text-extraction' % (self.api._UPLOAD_BASE_URL, self.file_id),
-                                      stream=True,
-                                      headers=headers)
-        with open(filename, 'wb') as f:
+        response = retry_on_too_early(
+            self.api.request,
+            "%s/files/%s/text-extraction" % (self.api._UPLOAD_BASE_URL, self.file_id),
+            stream=True,
+            headers=headers,
+        )
+        with open(filename, "wb") as f:
             for chunk in response.iter_content(chunk_size=self.api._CHUNK_SIZE):
                 f.write(chunk)
 
 
 class Folder(object):
-    """ A Folder containing files """
+    """A Folder containing files"""
 
-    def __init__(self, folder_id,
-                 folder_name=None,
-                 parent_folder_id=None,
-                 starred=None, trashed=None,
-                 api=None,
-                 ):
+    def __init__(
+        self,
+        folder_id,
+        folder_name=None,
+        parent_folder_id=None,
+        starred=None,
+        trashed=None,
+        api=None,
+    ):
         self.api = api
         self.folder_id = folder_id
         self.parent_folder_id = parent_folder_id
@@ -221,42 +256,55 @@ class Folder(object):
 
     def save(self):
         if self.folder_id is None:
-            response = self.api.request('%s/folders' % self.api._UPLOAD_BASE_URL,
-                                        json={
-                                            "starred": self.starred,
-                                            "parent_folder_id": self.parent_folder_id,
-                                            "folder_name": self.folder_name,
-                                            "trashed": self.trashed,
-                                        },
-                                        method='post')
+            response = self.api.request(
+                "%s/folders" % self.api._UPLOAD_BASE_URL,
+                json={
+                    "starred": self.starred,
+                    "parent_folder_id": self.parent_folder_id,
+                    "folder_name": self.folder_name,
+                    "trashed": self.trashed,
+                },
+                method="post",
+            )
             folder_metadata = response.json()
-            self.folder_id = folder_metadata['folder_id']
+            self.folder_id = folder_metadata["folder_id"]
         else:
             # saving an existing folder is like setting the metadata
             self.set_metadata(
                 folder_name=self.folder_name,
                 parent_folder_id=self.parent_folder_id,
-                trashed=self.trashed, starred=self.starred
+                trashed=self.trashed,
+                starred=self.starred,
             )
 
     @api_method
     def delete(self):
-        response = self.api.request('%s/folders/%s' % (self.api._UPLOAD_BASE_URL, self.folder_id),
-                                    method='delete')
+        response = self.api.request(
+            "%s/folders/%s" % (self.api._UPLOAD_BASE_URL, self.folder_id),
+            method="delete",
+        )
         return response
 
     @api_method
-    def set_metadata(self,
-                     folder_name=None,
-                     parent_folder_id=None,
-                     trashed=None, starred=None,
-                     ):
-        metadata = {k: v
-                    for k, v in dict(folder_name=folder_name,
-                                     parent_folder_id=parent_folder_id,
-                                     trashed=trashed, starred=starred,
-                                     ).items()
-                    if v is not None}
-        self.api.request('%s/folders/%s' % (self.api._UPLOAD_BASE_URL, self.folder_id),
-                         json=metadata,
-                         method='patch')
+    def set_metadata(
+        self,
+        folder_name=None,
+        parent_folder_id=None,
+        trashed=None,
+        starred=None,
+    ):
+        metadata = {
+            k: v
+            for k, v in dict(
+                folder_name=folder_name,
+                parent_folder_id=parent_folder_id,
+                trashed=trashed,
+                starred=starred,
+            ).items()
+            if v is not None
+        }
+        self.api.request(
+            "%s/folders/%s" % (self.api._UPLOAD_BASE_URL, self.folder_id),
+            json=metadata,
+            method="patch",
+        )

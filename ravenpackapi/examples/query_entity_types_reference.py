@@ -8,13 +8,13 @@ api = RPApi()
 
 # get the latest reference file for all the TEAM entities
 # call it without arguments to get all entities
-team_reference = api.get_entity_type_reference('TEAM')
+team_reference = api.get_entity_type_reference("TEAM")
 
 # we can then write this to file
-team_reference.write_to_file('team_reference.csv')
+team_reference.write_to_file("team_reference.csv")
 
 # with the reference we can also ask for a single entity given the ID
-team = team_reference['022568']  # this won't work in Edge
+team = team_reference["022568"]  # this won't work in Edge
 print(team.name)
 
 # or iterate through them

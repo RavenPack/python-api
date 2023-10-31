@@ -16,8 +16,7 @@ class DatasetList(object):
 
     @property
     def by_name(self):
-        """ Warning, the name is not guaranteed to be unique
-        """
+        """Warning, the name is not guaranteed to be unique"""
         result = {}
         for dataset in self.list:
             name = dataset.name

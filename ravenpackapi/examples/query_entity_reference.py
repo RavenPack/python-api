@@ -5,7 +5,7 @@ api = RPApi()
 
 # here we know a couple of RP_ENTITY_ID for 2 common entities
 # we want to ask for all the known entity metadata
-GOOGLE_RP_ENTITY_ID = '4A6F00'
+GOOGLE_RP_ENTITY_ID = "4A6F00"
 
 references = api.get_entity_reference(GOOGLE_RP_ENTITY_ID)
 print(references)

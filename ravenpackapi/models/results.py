@@ -1,9 +1,9 @@
 import json
 from collections import OrderedDict
 
-from six import string_types, binary_type
+from six import binary_type, string_types
 
-from ravenpackapi.models.fields import ANALYTICS_FIELDS_SET, FIELD_MAP, ANALYTICS_FIELDS
+from ravenpackapi.models.fields import ANALYTICS_FIELDS, ANALYTICS_FIELDS_SET, FIELD_MAP
 
 
 class Results(object):
@@ -43,7 +43,9 @@ class Result(object):
     def __getattr__(self, field):
         normalized_field = field.upper()
         analytics_field = FIELD_MAP.get(normalized_field)
-        if normalized_field not in FIELD_MAP:  # accessing unknown fields - i.e. Edge ones
+        if (
+            normalized_field not in FIELD_MAP
+        ):  # accessing unknown fields - i.e. Edge ones
             return self.data[field]
         if analytics_field is None:
             return self.__getattribute__(field)

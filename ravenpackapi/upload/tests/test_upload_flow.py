@@ -6,5 +6,5 @@ class TestUploadFlow:
 
     def test_quota(self):
         data = self.api.upload.quota()
-        for field in ('files', 'quota'):
+        for field in ("files", "quota"):
             assert field in data

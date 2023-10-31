@@ -19,7 +19,7 @@ class Field(object):
         return self.field_type(value)
 
     def __repr__(self):
-        return '<Field: %s>' % self.name
+        return "<Field: %s>" % self.name
 
     def validate(self, value):
         for validator in self.validators:
@@ -65,72 +65,60 @@ def int_optional(value):
 
 
 ANALYTICS_FIELDS = [
-    Field('timestamp_utc', from_timestamp),
-    Field('rp_story_id', str, validators=[length_is(32)]),
-
-    Field('rp_entity_id', str, validators=[length_is(6)]),
-    Field('entity_type', str, validators=[length_is(4)]),
-    Field('entity_name', str),
-
-    Field('country_code', str, validators=[length_is(2)]),
-    Field('relevance', int, validators=[between_inclusive(0, 100)]),
-    Field('event_sentiment_score', decimal_optional, validators=[between_inclusive(-1, 1)]),
-    Field('event_relevance', decimal_optional, validators=[between_inclusive(0, 100)]),
-
-    Field('event_similarity_key', str_optional, validators=[length_is(32)]),
-    Field('event_similarity_days', float_optional),
-
-    Field('topic', str_optional),
-    Field('group', str_optional),
-    Field('type', str_optional),
-    Field('sub_type', str_optional),
-    Field('property', str_optional),
-    Field('fact_level', str_optional),
-    Field('rp_position_id', str_optional),
-    Field('position_name', str_optional),
-    Field('evaluation_method', str_optional),
-    Field('maturity', str_optional),
-    Field('earnings_type', str_optional),
-
-    Field('event_start_date_utc', str_optional),
-    Field('event_end_date_utc', str_optional),
-    Field('reporting_period', str_optional),
-    Field('reporting_start_date_utc', str_optional),
-    Field('reporting_end_date_utc', str_optional),
-    Field('related_entity', str_optional),
-    Field('relationship', str_optional),
-
-    Field('category', str_optional),
-    Field('event_text', str_optional),
-    Field('news_type', str),
-    Field('rp_source_id', str),
-    Field('source_name', str),
-
-    Field('css', float),
-    Field('nip', float),
-    Field('peq', int),
-    Field('bee', int),
-    Field('bmq', int),
-    Field('bam', int),
-    Field('bca', int),
-    Field('ber', int),
-
-    Field('anl_chg', int),
-    Field('mcq', int),
-    Field('rp_story_event_index', int),
-    Field('rp_story_event_count', int),
-
-    Field('product_key', str),
-    Field('provider_id', str),
-    Field('provider_story_id', str),
-
-    Field('headline', str),
+    Field("timestamp_utc", from_timestamp),
+    Field("rp_story_id", str, validators=[length_is(32)]),
+    Field("rp_entity_id", str, validators=[length_is(6)]),
+    Field("entity_type", str, validators=[length_is(4)]),
+    Field("entity_name", str),
+    Field("country_code", str, validators=[length_is(2)]),
+    Field("relevance", int, validators=[between_inclusive(0, 100)]),
+    Field(
+        "event_sentiment_score", decimal_optional, validators=[between_inclusive(-1, 1)]
+    ),
+    Field("event_relevance", decimal_optional, validators=[between_inclusive(0, 100)]),
+    Field("event_similarity_key", str_optional, validators=[length_is(32)]),
+    Field("event_similarity_days", float_optional),
+    Field("topic", str_optional),
+    Field("group", str_optional),
+    Field("type", str_optional),
+    Field("sub_type", str_optional),
+    Field("property", str_optional),
+    Field("fact_level", str_optional),
+    Field("rp_position_id", str_optional),
+    Field("position_name", str_optional),
+    Field("evaluation_method", str_optional),
+    Field("maturity", str_optional),
+    Field("earnings_type", str_optional),
+    Field("event_start_date_utc", str_optional),
+    Field("event_end_date_utc", str_optional),
+    Field("reporting_period", str_optional),
+    Field("reporting_start_date_utc", str_optional),
+    Field("reporting_end_date_utc", str_optional),
+    Field("related_entity", str_optional),
+    Field("relationship", str_optional),
+    Field("category", str_optional),
+    Field("event_text", str_optional),
+    Field("news_type", str),
+    Field("rp_source_id", str),
+    Field("source_name", str),
+    Field("css", float),
+    Field("nip", float),
+    Field("peq", int),
+    Field("bee", int),
+    Field("bmq", int),
+    Field("bam", int),
+    Field("bca", int),
+    Field("ber", int),
+    Field("anl_chg", int),
+    Field("mcq", int),
+    Field("rp_story_event_index", int),
+    Field("rp_story_event_count", int),
+    Field("product_key", str),
+    Field("provider_id", str),
+    Field("provider_story_id", str),
+    Field("headline", str),
 ]
 
-ANALYTICS_FIELDS_SET = set(
-    [f.name for f in ANALYTICS_FIELDS]
-)
+ANALYTICS_FIELDS_SET = set([f.name for f in ANALYTICS_FIELDS])
 
-FIELD_MAP = {
-    f.name: f for f in ANALYTICS_FIELDS
-}
+FIELD_MAP = {f.name: f for f in ANALYTICS_FIELDS}
