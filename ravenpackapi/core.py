@@ -1,7 +1,7 @@
 import logging
 import os
 
-from ravenpackapi import Dataset
+from ravenpackapi.models.dataset import Dataset
 from ravenpackapi.exceptions import get_exception
 from ravenpackapi.key_events.module import KeyEventsApi
 from ravenpackapi.models.dataset_list import DatasetList

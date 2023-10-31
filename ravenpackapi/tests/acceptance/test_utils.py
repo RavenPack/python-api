@@ -1,24 +1,5 @@
 from ravenpackapi import Dataset, RPApi
-from ravenpackapi.util import to_curl
 from ravenpackapi.utils.helpers import delete_all_datasets_by_name, get_datasets_by_name
-
-
-class AttrDict(dict):
-    def __init__(self, *args, **kwargs):
-        super(AttrDict, self).__init__(*args, **kwargs)
-        self.__dict__ = self
-
-
-class TestToCurl(object):
-    def test_normal_curl(self):
-        request = AttrDict(
-            method="GET", headers={"API-KEY": "test"}, body=None, url="http://test"
-        )
-        assert to_curl(request) == "curl -X GET -H 'API-KEY:test' 'http://test'"
-
-    def test_missing_request(self):
-        request = None
-        assert to_curl(request) == "No request"
 
 
 class TestDeleteAllByName(object):

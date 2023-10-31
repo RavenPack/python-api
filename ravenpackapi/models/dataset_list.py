@@ -1,6 +1,6 @@
 import logging
 
-from ravenpackapi import Dataset
+from ravenpackapi.models.dataset import Dataset
 
 logger = logging.getLogger(__name__)
 
