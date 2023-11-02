@@ -24,6 +24,7 @@ jobs:
         # Pip dependencies
         python -m pip install --upgrade pip
         pip install build
+        pip install -r requirements.txt
         # Conda dependencies
         conda config --add channels conda-forge
         conda install --yes conda-build
