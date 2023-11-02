@@ -1,5 +1,33 @@
 # Changelog
 
+## v1.1.1 (2023-09-21)
+
+### Removed
+
+* Removed dependency on `future` #9
+
+### Fixed
+
+Fixed bug with lazy loading that caused the wrong product (`RPA`) being sent
+_sometimes_ when saving a dataset without modifying it.
+
+To reproduce the issue:
+```python
+from ravenpackapi import RPApi
+api = RPApi(product="edge")
+ds = api.get_dataset("SOME_DATASET_ID")
+ds.save()
+```
+
+Note that this error is not always triggered and is not deterministic.
+
+## v1.1.0 (2023-09-21)
+
+### Added
+
+- Support for anaconda
+- New Github Actions pipeline
+
 ## v1.0.60 (2023-09-13)
 
 ### Added
