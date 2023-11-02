@@ -4,6 +4,7 @@ twine
 
 pytest
 pytest-xdist
+pytest-mock
 
 tox
 
