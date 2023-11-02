@@ -37,7 +37,7 @@ class Dataset(object):
         name=None,
         description=None,
         tags=None,
-        product="RPA",
+        product=None,
         product_version="1.0",
         frequency=None,
         fields=None,
@@ -62,9 +62,14 @@ class Dataset(object):
 
         self.api = api
         self.product_version = product_version
-        self.product = product
 
         self.uuid = uuid
+
+        # If the product is not specified, we assume it is RPA
+        # unless the uuid is specified, in which case we'll ask the server
+        self.product = product
+        if self.product is None and self.uuid is None:
+            self.product = "RPA"
 
         self.name = name
         self.description = description
