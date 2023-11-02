@@ -1,21 +1,22 @@
 import logging
 import os
+from platform import python_version
 
-from ravenpackapi.models.dataset import Dataset
+from ravenpackapi import __version__
 from ravenpackapi.exceptions import get_exception
 from ravenpackapi.key_events.module import KeyEventsApi
+from ravenpackapi.models.dataset import Dataset
 from ravenpackapi.models.dataset_list import DatasetList
 from ravenpackapi.models.job import Job
 from ravenpackapi.models.mapping import RPMappingResults
 from ravenpackapi.models.reference import EntityTypeReference, RpEntityReference
 from ravenpackapi.models.results import Results
 from ravenpackapi.upload.module import UploadApi
-from ravenpackapi.util import to_curl
+from ravenpackapi.util import get_python_version, to_curl
 from ravenpackapi.utils.date_formats import as_date_str, as_datetime_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
 
 _VALID_METHODS = ("get", "post", "put", "delete", "patch")
-VERSION = "1.0.58"
 
 logger = logging.getLogger("ravenpack.core")
 
@@ -69,9 +70,10 @@ class RPApi(object):
 
     @property
     def headers(self):
+        python_version = get_python_version()
         return {
             "API_KEY": self.api_key,
-            "User-Agent": "RavenPack Python v%s" % VERSION,
+            "User-Agent": "RavenPack Python %s v%s" % (python_version, __version__),
         }
 
     def request(
@@ -111,7 +113,7 @@ class RPApi(object):
             json=json,
             params=params,
             stream=stream,
-            **extra_params,
+            **extra_params
         )
         if self.log_curl_commands:
             logger.info("API query to %s" % to_curl(response.request))
@@ -270,7 +272,8 @@ class RPApi(object):
             # In Edge we have too many different types to hardcode them here.
             return
         raise ValueError(
-            f"Flatfile type {flatfile_type} is not valid for product {self.product}"
+            "Flatfile type %s is not valid for product %s"
+            % (flatfile_type, self.product)
         )
 
     def get_flatfile(self, flatfile_type, flatfile_id):

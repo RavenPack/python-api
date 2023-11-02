@@ -1,5 +1,6 @@
 import csv
 import logging
+import platform
 import sys
 
 import six
@@ -100,3 +101,9 @@ def parse_csv_line(line):
         if not isinstance(line, six.text_type):
             line = line.decode("utf-8")  # Python 3 wants strings
     return list(csv.reader((line,)))[0]
+
+
+def get_python_version():
+    """Get the python version as a string like 2.7 or 3.6"""
+    platform_version = platform.python_version_tuple()
+    return ".".join(platform_version[:2])
