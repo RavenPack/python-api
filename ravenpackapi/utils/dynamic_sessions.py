@@ -11,8 +11,10 @@ _REQUESTS_METHODS = ("get", "post", "put", "delete", "patch")
 
 
 class DynamicSession(object):
-    """This looks intricate but its a way to make requests.session work transparently creating different
-    session depending on the hostname of the urls
+    """
+    This looks intricate but its a way to make requests.session work
+    transparently creating different session depending on the hostname
+    of the urls.
     """
 
     _session_by_host = defaultdict(requests.session)
@@ -45,5 +47,8 @@ class DynamicSession(object):
 
     @staticmethod
     def get_session(*args, **kwargs):
-        """This is the only method that is only from here - everything else is taken from requests"""
+        """
+        This is the only method that is only from here.
+        Everything else is taken from requests
+        """
         return DynamicSession.get_session_from_args(args, kwargs)
