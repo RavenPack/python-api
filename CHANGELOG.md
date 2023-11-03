@@ -1,6 +1,16 @@
 # Changelog
 
-## v1.1.1 (2023-09-21)
+## v1.1.2 (2023-10-03)
+
+### Fixed
+
+Fixed a bug in setup.py that caused a crash when running
+
+```
+python setup.py egg_info
+```
+
+## v1.1.1 (2023-10-02)
 
 ### Removed
 
