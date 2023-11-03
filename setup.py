@@ -1,6 +1,13 @@
+import sys
+
 from setuptools import find_packages, setup
 
-from ravenpackapi import __version__
+# Hack to get the version number from the package without importing the
+# __init__.py and all its dependencies.
+sys.path.insert(0, "./ravenpackapi/")
+__version__ = __import__("version").__version__
+sys.path = sys.path[1:]
+
 
 with open("README.rst") as readme_file:
     readme = readme_file.read()

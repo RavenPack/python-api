@@ -1,8 +1,6 @@
 import logging
 import os
-from platform import python_version
 
-from ravenpackapi import __version__
 from ravenpackapi.exceptions import get_exception
 from ravenpackapi.key_events.module import KeyEventsApi
 from ravenpackapi.models.dataset import Dataset
@@ -15,6 +13,7 @@ from ravenpackapi.upload.module import UploadApi
 from ravenpackapi.util import get_python_version, to_curl
 from ravenpackapi.utils.date_formats import as_date_str, as_datetime_str
 from ravenpackapi.utils.dynamic_sessions import DynamicSession
+from ravenpackapi.version import __version__
 
 _VALID_METHODS = ("get", "post", "put", "delete", "patch")
 

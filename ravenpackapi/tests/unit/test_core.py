@@ -1,8 +1,8 @@
 import pytest
 
-from ravenpackapi import __version__
 from ravenpackapi.core import RPApi
 from ravenpackapi.util import get_python_version
+from ravenpackapi.version import __version__
 
 
 class TestRPApiRequests:
