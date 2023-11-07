@@ -1,4 +1,4 @@
-# an example of how to ask for a daily dump
+# an example of how to ask for a daily, weekly or monthly dump
 import datetime
 
 from ravenpackapi import Dataset, RPApi
