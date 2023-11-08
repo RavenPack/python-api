@@ -34,7 +34,7 @@ DEFAULT_ENDPOINTS = {
 class RPApi(object):
     _CHUNK_SIZE = 32 * 1024
     common_request_params = {
-        "timeout": (10, 60),  # 10 seconds on connection - 60 on read
+        "timeout": (10, 100),  # 10 seconds on connection - 100 on read
     }
 
     def __init__(self, api_key=None, product="rpa"):

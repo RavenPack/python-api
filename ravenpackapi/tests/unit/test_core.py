@@ -14,7 +14,7 @@ class TestRPApiRequests:
         dynamic_session.get.assert_called_with(
             url="https://api-edge.ravenpack.com/1.0/datasets",
             headers={"API_KEY": api.api_key, "User-Agent": user_agent},
-            timeout=(10, 60),
+            timeout=(10, 100),
             data=None,
             params=None,
             stream=False,

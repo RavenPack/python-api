@@ -1,5 +1,16 @@
 # Changelog
 
+## UNRELEASED
+
+### Changed
+
+- Default timeout for request increased from 60 seconds to 100 seconds to match
+  the timeout in the API. The default connection timeout is still 10 seconds.
+
+### Added
+
+- Added some examples.
+
 ## v1.1.2 (2023-10-03)
 
 ### Fixed
