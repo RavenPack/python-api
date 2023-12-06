@@ -19,6 +19,8 @@ class RPMappingMatch(object):
         self.candidates = [
             RPMappingCandidate(candidate) for candidate in data.get("rp_entities", [])
         ]
+        if not self.candidates and not self.errors:
+            self.errors = [self.request]
 
         if not self.errors:
             # let's put the best candidate data on the obj for convenience
