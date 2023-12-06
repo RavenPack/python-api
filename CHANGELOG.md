@@ -2,6 +2,13 @@
 
 ## UNRELEASED
 
+## v1.1.3 (2023-12-06)
+
+### Fixed
+
+- Fixed corner case when the entity-mapping doesn't return any entity but also
+  there are no errors
+
 ### Changed
 
 - Default timeout for request increased from 60 seconds to 100 seconds to match
