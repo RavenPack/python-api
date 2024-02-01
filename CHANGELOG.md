@@ -2,6 +2,30 @@
 
 ## UNRELEASED
 
+## v1.1.4 (2024-02-01)
+
+### Fixed
+
+Fixed issue creating an Edge dataset without product attribute specified, but specifying the product in the `RPApi` object:
+
+```python
+from ravenpackapi import RPApi, Dataset
+
+api = RPApi(api_key="YOUR_API_KEY", product="edge")
+
+ds = api.create_dataset(
+    Dataset(
+        name="New Dataset",
+        filters={"entity_relevance": {"$gte": 90}},
+    )
+)
+```
+
+Since the product is not specified in `Dataset`'s `__init__`, the incorrect
+product was being passed to the API, resulting in the message.
+
+> Field 'product' must be 'edge'
+
 ## v1.1.3 (2023-12-06)
 
 ### Fixed
