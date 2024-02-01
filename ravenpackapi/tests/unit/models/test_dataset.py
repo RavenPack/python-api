@@ -5,14 +5,14 @@ from ravenpackapi.models.dataset import Dataset
 
 class TestDataset:
     def test_create_rpa_dataset(self, fake_api):
-        dataset = Dataset(api=fake_api, name="test")
+        dataset = Dataset(product="rpa", api=fake_api, name="test")
         assert dataset.name == "test"
         assert dataset.api == fake_api
-        assert dataset.product == "RPA"
+        assert dataset.product == "rpa"
         dataset.save()
         assert fake_api.datasets["1"] == {
             "uuid": "1",
-            "product": "RPA",
+            "product": "rpa",
             "product_version": "1.0",
             "name": "test",
         }
@@ -30,13 +30,18 @@ class TestDataset:
             "name": "test",
         }
 
-    def test_create_dataset_with_default_product(self, fake_api):
+    @pytest.mark.parametrize(
+        "product",
+        ["rpa", "edge"],
+    )
+    def test_create_dataset_with_default_product(self, product):
+        fake_api = FakeAPI(product=product)
         dataset = Dataset(api=fake_api, name="test")
-        assert dataset.product == "RPA"
+        assert dataset.product == product
         dataset.save()
         assert fake_api.datasets["1"] == {
             "uuid": "1",
-            "product": "RPA",
+            "product": product,
             "product_version": "1.0",
             "name": "test",
         }
@@ -117,8 +122,9 @@ class TestDataset:
 
 
 class FakeAPI:
-    def __init__(self):
+    def __init__(self, product="rpa"):
         self.datasets = {}
+        self.product = product
 
     def request(self, endpoint, method="get", json=None):
         if method == "post":

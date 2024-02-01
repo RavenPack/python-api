@@ -65,11 +65,9 @@ class Dataset(object):
 
         self.uuid = uuid
 
-        # If the product is not specified, we assume it is RPA
-        # unless the uuid is specified, in which case we'll ask the server
         self.product = product
-        if self.product is None and self.uuid is None:
-            self.product = "RPA"
+        if self.product is None and self.uuid is None and self.api is not None:
+            self.product = self.api.product
 
         self.name = name
         self.description = description
