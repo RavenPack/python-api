@@ -3,6 +3,7 @@ Example to upload a batch of files and get the analytics results in a thread poo
 Note: this example requires the "futures" package in python 2.7,
 or python 3.2+
 """
+
 import glob
 import os
 from concurrent.futures.thread import ThreadPoolExecutor

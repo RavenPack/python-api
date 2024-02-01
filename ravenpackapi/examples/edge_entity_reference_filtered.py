@@ -9,6 +9,7 @@ that the files for EDGE are way bigger (in the order of GBs). This script helps
 you get those mappings for the entities you are interested into, without having
 to download all the rest.
 """
+
 import csv
 
 from ravenpackapi import RPApi
