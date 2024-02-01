@@ -9,7 +9,6 @@ class KeyEventsApi(object):
         self.product = product
 
     def _request_list(self, file_type):
-
         response = self.api.request("/%s/history/%s/" % (self.product, file_type))
         data = response.json()
         return data

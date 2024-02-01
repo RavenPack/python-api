@@ -26,7 +26,6 @@ class TestDatasetJson(object):
         )
         indicator_dataset = self.api.create_dataset(indicator_dataset)
         try:
-
             # ask the indicator dataset for its data
             response = indicator_dataset.json("2018-01-01 00:00", "2018-01-02 00:00")
             assert len(response) == 2  # we should get 2 rows
