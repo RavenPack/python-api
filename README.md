@@ -180,7 +180,7 @@ for ticker in references.tickers:
 Analyse your own content using RavenPack’s proprietary NLP technology.
 
 ### Uploading a file
-Upload a file to the system. In order to successfully have your files analized by RavenPack's Annotations platform, you need to perform the following method:
+Upload a file to the system. In order to successfully have your files analyzed by RavenPack's Annotations platform, you need to perform the following method:
 
 ```python
 f = api.upload.file("_orig.doc")
