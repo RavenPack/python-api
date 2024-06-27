@@ -1,4 +1,4 @@
 requests[security]
 six
 python-dateutil
-retry
+tenacity

@@ -4,19 +4,6 @@ from ravenpackapi.exceptions import APIException, APIException425
 from ravenpackapi.upload.upload_utils import retry_on_too_early
 
 
-def get_wait_ranges(retries):
-    """
-    Given a backoff of 2 and a jitter between 1 and 5
-    """
-    max_wait = min_wait = 3
-    for _ in range(retries - 1):
-        min_wait *= 2
-        max_wait *= 2
-        min_wait += 1
-        max_wait += 5
-    return min_wait, max_wait
-
-
 class TestRetryOnTooEarly:
     def test_fails_if_not_enough_retries(self):
         eventually_success = EventuallySuccess(num_calls_to_fail=10)
@@ -25,7 +12,7 @@ class TestRetryOnTooEarly:
         assert eventually_success.num_calls == 10
         assert eventually_success.calls == [((1, 2, 3), {"namearg": "namevalue"})] * 10
         3
-        min_wait, max_wait = get_wait_ranges(10)
+        min_wait, max_wait = 3 * 2 ** 9, 3 * 2 ** 10
         assert min_wait < self.seconds_slept <= max_wait
 
     def test_succeeds_eventually(self):
@@ -51,7 +38,7 @@ class TestRetryOnTooEarly:
         def sleep(seconds):
             self.seconds_slept += seconds
 
-        time = mocker.patch("retry.api.time")
+        time = mocker.patch("tenacity.nap.time")
         time.sleep.side_effect = sleep
         return time.sleep
 
