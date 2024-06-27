@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+### Changed
+
+- Removed the dependency on the library `retry` (and the indirect dependency on
+  `py`), and replaced it with `tenacity`. This should be transparent.
+
 ## v1.1.4 (2024-02-01)
 
 ### Fixed
