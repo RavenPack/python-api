@@ -27,7 +27,7 @@ jobs:
         pip install -r requirements.txt
         # Conda dependencies
         conda config --add channels conda-forge
-        conda install --yes conda-build
+        conda install --yes conda-build=24.3.0
         conda install --yes --file requirements.txt
     - name: Build Conda package
       run: |
