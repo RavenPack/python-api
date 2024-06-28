@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+## v1.1.5 (2024-06-28)
+
 ### Changed
 
 - Removed the dependency on the library `retry` (and the indirect dependency on
