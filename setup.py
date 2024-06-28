@@ -37,5 +37,5 @@ setup(
         "License :: OSI Approved :: MIT License",
     ],
     keywords="python analytics api rest news data",
-    install_requires=["requests[security]", "python-dateutil", "six", "retry"],
+    install_requires=["requests[security]", "python-dateutil", "six", "tenacity"],
 )
