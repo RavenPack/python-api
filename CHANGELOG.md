@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### Fixed
+
+Fixed crash trying to get the `occupations-taxonomy` and `jobs-taxonomy` reference files:
+
+```python
+from ravenpackapi import RPApi
+api = RPApi(product="edge")
+
+occupations = api.get_entity_type_reference("occupations-taxonomy")
+occupations.write_to_file("occupations-reference.csv")
+
+jobs = api.get_entity_type_reference("jobs-taxonomy")
+jobs.write_to_file("jobs-reference.csv")
+```
+
 ## [v1.1.5] (2024-06-28)
 
 ### Changed

@@ -152,15 +152,15 @@ class EntityTypeReference(object):
         yield headers
         for line in iterator:
             parsed_line = parse_csv_line(line)
-            (
-                rp_entity_id,
-                entity_type,
-                data_type,
-                data_value,
-                range_start,
-                range_end,
-            ) = parsed_line
             if self.store_in_memory:
+                (
+                    rp_entity_id,
+                    entity_type,
+                    data_type,
+                    data_value,
+                    range_start,
+                    range_end,
+                ) = parsed_line
                 # we keep track of all the parsed entities just for rpa
                 if rp_entity_id not in self._entities:
                     self._entities[rp_entity_id] = entity = RpEntityReference(
