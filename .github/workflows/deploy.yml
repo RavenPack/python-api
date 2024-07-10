@@ -1,10 +1,31 @@
 name: Deploy packages to PyPI and Anaconda
 on:
-  release:
-    types: [released]
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'v*.*'
 jobs:
+
+  # Check that the tag matches the lastest version in the code
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check version
+      run: |
+        # Get the latest version from the code
+        latest_version=$(sed -r 's/__version__ = "(.*)"/\1/' ravenpackapi/version.py)
+        # Get the tag from the git tag
+        tag=$(echo $GITHUB_REF | sed -r 's/refs\/tags\/v(.*)/\1/')
+        # Check that the tag matches the latest version
+        if [ "$latest_version" != "$tag" ]; then
+          echo "The tag $tag does not match the latest version $latest_version"
+          exit 1
+        fi
+
   # Build packages
   build:
+    needs: check-version
     uses: ./.github/workflows/build.yml
 
   # Anaconda
@@ -60,3 +81,21 @@ jobs:
         path: dist/
     - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
+
+  # Create a release
+  github-release:
+    needs:
+      - deploy-pypi
+    name: >-
+      Create a GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Dump the changelog
+      run: .github/changelogtext.sh > '${{ github.ref_name }}.md'
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        latest_version=$(sed -r 's/__version__ = "(.*)"/\1/' ravenpackapi/version.py)
+        gh release create '${{ github.ref_name }}' -F '${{ github.ref_name }}.md' --title "Version $latest_version" --repo '${{ github.repository }}'
