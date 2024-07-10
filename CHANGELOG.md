@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [v1.1.6] (2024-07-10)
 
 ### Fixed
 
@@ -613,7 +613,8 @@ Getting entity reference through `get_entity_reference`.
 
 First _non-beta_ release
 
-[Unreleased]: https://github.com/RavenPack/python-api/compare/v1.1.5...HEAD
+[Unreleased]: https://github.com/RavenPack/python-api/compare/v1.1.6...HEAD
+[v1.1.6]: https://github.com/RavenPack/python-api/compare/v1.1.5...v1.1.6
 [v1.1.5]: https://github.com/RavenPack/python-api/compare/v1.1.4...v1.1.5
 [v1.1.4]: https://github.com/RavenPack/python-api/compare/v1.1.3...v1.1.4
 [v1.1.3]: https://github.com/RavenPack/python-api/compare/v1.1.2...v1.1.3
