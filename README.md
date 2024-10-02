@@ -224,7 +224,8 @@ api = RPApi()
 api.common_request_params.update(
     dict(
         proxies={'https': 'http://your_internal_proxy:9999'},
-        verify=False,
+        timeout=(20, 120), # connect, read timeouts
+        verify=False, # disable certificate verification
     )
 )
 
