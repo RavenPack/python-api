@@ -46,7 +46,7 @@ jobs:
         conda convert -p win-64 linux-64/*.tar.bz2
 
     - name: Store the distribution packages
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: conda-dist
         path: |
@@ -73,7 +73,7 @@ jobs:
       run: |
         python setup.py sdist
     - name: Store the distribution packages
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pypi-dist
         path: |
