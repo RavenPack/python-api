@@ -8,31 +8,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
+    # conda-build 24.3.0 is the last version with bdist_conda. It is only
+    # available up to Python 3.12 and doesn't work with newer conda versions,
+    # so build in a separate Python 3.12 env with a conda from the same time
+    defaults:
+      run:
+        shell: bash -el {0}
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: '3.10'
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-        conda --version
-    - uses: conda-incubator/setup-miniconda@v2
-      with:
-        auto-activate-base: true
-        activate-environment: ""
+        activate-environment: build
+        python-version: '3.12'
+        channels: conda-forge
+        conda-remove-defaults: 'true'
     - name: Install dependencies
       run: |
-        # Pip dependencies
-        python -m pip install --upgrade pip
-        pip install build
-        pip install -r requirements.txt
-        # Conda dependencies
-        conda config --add channels conda-forge
-        conda install --yes conda-build=24.3.0
+        echo "CONDA_BLD_PATH=$RUNNER_TEMP/conda-bld" >> $GITHUB_ENV
+        conda install --yes conda-build=24.3.0 conda=24.5.0 setuptools
         conda install --yes --file requirements.txt
     - name: Build Conda package
       run: |
@@ -40,10 +34,10 @@ jobs:
     - name: Copy Conda packages to local dist folder
       run: |
         mkdir -p dist
-        cp -r /usr/share/miniconda/conda-bld/linux-64 ./dist
+        cp -r $CONDA_BLD_PATH/linux-64 ./dist
         cd dist
-        conda convert -p osx-64 linux-64/*.tar.bz2
-        conda convert -p win-64 linux-64/*.tar.bz2
+        conda-convert -p osx-64 linux-64/*.tar.bz2
+        conda-convert -p win-64 linux-64/*.tar.bz2
 
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
