@@ -25,8 +25,12 @@ def parts_to_curl(method, endpoint, headers, data=None):
         "Content-Length",
         "User-Agent",
     )
+    # never print credentials: these commands end up in the logs
+    redacted_headers = ("api_key", "api-key", "authorization")
     headers = [
-        "'{0}:{1}'".format(k, v) for k, v in headers.items() if k not in ignored_headers
+        "'{0}:{1}'".format(k, "<REDACTED>" if k.lower() in redacted_headers else v)
+        for k, v in headers.items()
+        if k not in ignored_headers
     ]
     headers = " -H ".join(sorted(headers))
 

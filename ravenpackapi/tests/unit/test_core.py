@@ -1,6 +1,9 @@
+import logging
+
 import pytest
 
 from ravenpackapi.core import RPApi
+from ravenpackapi.exceptions import APIException
 from ravenpackapi.util import get_python_version
 from ravenpackapi.version import __version__
 
@@ -21,6 +24,20 @@ class TestRPApiRequests:
             json=None,
         )
         assert response.status_code == 200
+
+    def test_api_key_not_logged(self, api, dynamic_session, caplog):
+        response = dynamic_session.get.return_value
+        response.status_code = 403
+        response.request.method = "GET"
+        response.request.url = "https://api-edge.ravenpack.com/1.0/datasets"
+        response.request.headers = api.headers
+        response.request.body = None
+
+        with caplog.at_level(logging.INFO):
+            with pytest.raises(APIException):
+                api.request("/datasets")
+        assert "Error calling the API" in caplog.text
+        assert api.api_key not in caplog.text
 
     @pytest.fixture
     def api(self, dynamic_session):

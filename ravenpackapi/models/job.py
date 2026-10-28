@@ -86,15 +86,16 @@ class Job(object):
                     status=self.status,
                 )
             sleep(self._FILE_AVAILABILIY_SECONDS_DELAY)
+            # check the deadline before polling, so API errors can't skip it
+            if max_end_date and datetime.datetime.utcnow() > max_end_date:
+                raise DataFileTimeout(
+                    "Timeout: job wasn't complete after %d seconds" % timeout_seconds
+                )
             try:
                 self.get_status()
             except APIException:  # keep waiting if API raises exceptions
                 sleep(self._FILE_AVAILABILIY_SECONDS_DELAY)
                 continue
-            if max_end_date and datetime.datetime.utcnow() > max_end_date:
-                raise DataFileTimeout(
-                    "Timeout: job wasn't complete after %d seconds" % timeout_seconds
-                )
             if not printed_once:
                 logger.info("Waiting for the job %s to be ready..." % self.token)
                 printed_once = True

@@ -1,3 +1,5 @@
+import pytest
+
 from ravenpackapi.util import get_python_version, to_curl
 
 
@@ -10,9 +12,18 @@ class AttrDict(dict):
 class TestToCurl(object):
     def test_normal_curl(self):
         request = AttrDict(
-            method="GET", headers={"API-KEY": "test"}, body=None, url="http://test"
+            method="GET", headers={"X-Custom": "test"}, body=None, url="http://test"
         )
-        assert to_curl(request) == "curl -X GET -H 'API-KEY:test' 'http://test'"
+        assert to_curl(request) == "curl -X GET -H 'X-Custom:test' 'http://test'"
+
+    @pytest.mark.parametrize("header", ["API_KEY", "API-KEY", "Authorization"])
+    def test_credentials_are_redacted(self, header):
+        request = AttrDict(
+            method="GET", headers={header: "s3cr3t"}, body=None, url="http://test"
+        )
+        curl = to_curl(request)
+        assert "s3cr3t" not in curl
+        assert curl == "curl -X GET -H '%s:<REDACTED>' 'http://test'" % header
 
     def test_missing_request(self):
         assert to_curl(None) == "No request"
