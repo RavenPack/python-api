@@ -20,7 +20,8 @@ class TestEntityReference(object):
 
         assert reference.rp_entity_id == APPLE_RP_ENTITY_ID
         assert reference.names[-1].value == reference.name == "APPLE INC."
-        assert reference.tickers[-1].value == "AAPL"
+        valid_tickers = [t.value for t in reference.tickers if t.is_valid()]
+        assert "AAPL" in valid_tickers
 
     def test_failing(self):
         try:
