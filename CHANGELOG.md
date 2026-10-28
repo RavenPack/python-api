@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.1.7] (2026-10-28)
+
+### Fixed
+
+- Request headers containing credentials are now masked in the curl commands written to the logs.
+- `Job.wait_for_completion(timeout_seconds=...)` now raises `DataFileTimeout` when the timeout expires, even if the API keeps returning errors.
+
 ## [v1.1.6] (2024-07-10)
 
 ### Fixed
